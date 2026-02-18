@@ -1,10 +1,8 @@
-# 🏆 MedAdhere Pro - Agentic Medication Adherence System
+# MedAdhere Pro - AI-Powered Medication Adherence System
 
-**Competition:** MedGemma Impact Challenge 2026 - Agentic Workflow Prize ($25,000)
+## Overview
 
-## 📋 Overview
-
-MedAdhere Pro is an AI-powered medication adherence assistant that uses **true agentic workflows** with Google's MedGemma model to help patients take their medications correctly through proactive intervention, personalized solutions, and continuous learning.
+MedAdhere Pro is an intelligent medication adherence assistant that leverages multi-agent AI workflows with Google's MedGemma model to help patients take their medications correctly through proactive intervention, personalized solutions, and continuous learning.
 
 ### The Problem
 - 50% of patients don't take medications as prescribed
@@ -12,111 +10,145 @@ MedAdhere Pro is an AI-powered medication adherence assistant that uses **true a
 - 125,000+ preventable deaths per year in the US
 
 ### Our Solution
-A **mobile-first autonomous care team** powered by 5 specialized AI agents that observe, think, act, and learn - improving patient adherence from 60% to 87%+ in 2 weeks.
+An autonomous AI care team powered by 5 specialized agents that observe, analyze, act, and learn - demonstrating improved patient adherence outcomes.
 
-## 🎯 Key Features
+## Key Features
 
-### 1. **Proactive Intervention** (Not Reactive Q&A)
-- Background monitoring of adherence patterns
-- Predicts problems before they happen
-- Automatically adjusts reminders based on patient behavior
+### 1. Proactive Intervention
+- Continuous monitoring of adherence patterns
+- Predictive analysis to identify problems before they escalate
+- Automatic adjustment of reminders based on patient behavior
 
-### 2. **True Agentic Workflow** (5 Specialized Agents)
-- 🔍 **Investigation Agent** - Analyzes patterns & root causes
-- 🛠️ **Remediation Agent** - Creates personalized solutions
-- ⚠️ **Risk Assessment Agent** - Validates safety with MedGemma
-- ✅ **Execution Agent** - Implements changes automatically
-- 📚 **Learning Agent** - Improves system over time
+### 2. Multi-Agent Workflow (5 Specialized Agents)
+- **Investigation Agent** - Analyzes patterns and root causes
+- **Remediation Agent** - Creates personalized solutions
+- **Risk Assessment Agent** - Validates safety with MedGemma
+- **Execution Agent** - Implements changes automatically
+- **Learning Agent** - Improves system over time
 
-### 3. **Mobile-First Design**
-- Push notifications with quick actions
-- No app opening needed for basic interactions
-- Real-time chat with AI agents
-- Offline support with auto-sync
-
-### 4. **Medical Intelligence**
+### 3. Medical Intelligence
 - Powered by google/medgemma-1.5-4b-it
 - Real-time safety validation
 - Drug interaction checking
 - Evidence-based interventions
 
-## 🏗️ Architecture
+## Architecture
 
 ```
-📱 Mobile UI (React/Flutter)
-    ↓ Push Notifications + WebSocket
-🔥 Firebase (Real-time DB + Cloud Functions)
+Web UI (HTML/JavaScript)
+    ↓ REST API + WebSocket
+Firebase (Firestore + Cloud Functions)
     ↓ Agent Orchestration
-🐍 Flask Backend (Agent Engine)
+Flask Backend (Agent Engine)
     ↓ Medical Reasoning
-🤖 MedGemma HF (Hugging Face Inference Endpoint - google/medgemma-1.5-4b-it)
+MedGemma (Hugging Face Inference Endpoint - google/medgemma-1.5-4b-it)
 ```
 
-## 📊 Competition Fit
+## Quick Start
 
-| Criteria | Score | Evidence |
-|----------|-------|----------|
-| Innovation | 24/25 | First true multi-agent medication adherence system |
-| Technical Merit | 25/25 | Real MedGemma deployment, sophisticated orchestration |
-| Healthcare Impact | 25/25 | Measurable outcomes (60% → 87% adherence) |
-| Presentation | 22/25 | Mobile-first design, clear workflows |
-| **TOTAL** | **96/100** | **HIGH likelihood of winning** 🏆 |
+### Prerequisites
+- Python 3.12+
+- Firebase account with Firestore enabled
+- Hugging Face API key with MedGemma endpoint access
 
-## 🚀 Quick Start
+### Installation
 
-See [docs/SETUP.md](docs/SETUP.md) for detailed setup instructions.
-
-## 📁 Project Structure
-
-```
-medadhere-agentic/
-├── docs/                      # All documentation
-│   ├── ARCHITECTURE.md        # Overall system architecture
-│   ├── AGENTS.md             # Agent workflow details
-│   ├── MOBILE.md             # Mobile-first design
-│   ├── COMPETITION.md        # Competition submission guide
-│   └── SETUP.md              # Development setup
-├── backend/                   # Flask backend
-│   ├── agents/               # Agent orchestration
-│   ├── config.py             # Configuration
-│   └── app.py                # API endpoints
-├── mobile/                    # Mobile UI mockups/code
-├── firebase/                  # Firebase Cloud Functions
-├── data/                      # Sample patient data
-└── scripts/                   # Deployment & utility scripts
+1. **Clone the repository:**
+```bash
+git clone https://github.com/raghulresearcher/kaggle_comp_medgemma.git
+cd kaggle_comp_medgemma
 ```
 
-## 🎬 Demo Scenarios
+2. **Create virtual environment:**
+```bash
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+```
 
-### Scenario 1: "I Forgot"
-Patient forgets Monday morning doses → Agent detects pattern → Suggests earlier reminder → Tracks effectiveness
+3. **Install dependencies:**
+```bash
+pip install -r requirements.txt
+```
 
-### Scenario 2: "Ran Out"
-Patient out of medication → Agent checks pharmacy → Orders refill → Sets up auto-refill
+4. **Configure environment:**
+```bash
+cp .env.example .env
+# Edit .env with your API keys and credentials
+```
 
-### Scenario 3: "Side Effects"
-Patient reports nausea → MedGemma validates → Suggests taking with food → Follows up in 3 days
+5. **Start the backend:**
+```bash
+python backend/app.py
+```
 
-## 📝 Competition Submission
+6. **Start the frontend:**
+```bash
+cd public
+python -m http.server 3000
+```
 
-- **Demo Video:** 3-5 minutes showing mobile notification flows
-- **Documentation:** Architecture diagrams + agent workflows
-- **Code:** Flask backend + Firebase integration + MedGemma deployment
-- **Impact:** Measurable adherence improvement metrics
+Access the UI at: http://localhost:3000
 
-## 🏆 Why This Wins
+## Project Structure
 
-✅ Uses **real MedGemma** (not just Gemini API)  
-✅ **True agentic workflow** (not simple chatbot)  
-✅ **Mobile-first** (real-world usability)  
-✅ **Measurable impact** (adherence improvements)  
-✅ **Safety-first** (MedGemma validation at every step)  
-✅ **Closed-loop learning** (improves over time)
+```
+medadhere-agentic-clean/
+├── backend/              # Flask backend application
+│   ├── agents/          # Agent system and orchestration
+│   ├── config.py        # Configuration management
+│   ├── app.py           # API endpoints
+│   └── firebase_client.py  # Firebase integration
+├── public/              # Web frontend
+│   └── index.html       # User interface
+├── tests/               # Test scenarios
+├── docs/                # Documentation
+│   ├── ARCHITECTURE.md  # System architecture
+│   ├── KNOWLEDGE_TRANSFER.md  # Technical details
+│   └── MVP_PLAN.md      # Development plan
+├── functions/           # Firebase Cloud Functions
+└── requirements.txt     # Python dependencies
+```
 
-## 📧 Contact
+## Demo Scenarios
 
-Built for MedGemma Impact Challenge 2026
+### Scenario 1: Forgot Medication
+Patient forgets Monday morning doses → System detects pattern → Suggests earlier reminder → Tracks effectiveness
 
----
+### Scenario 2: Ran Out of Medication
+Patient out of medication → System checks pharmacy → Facilitates refill → Sets up auto-refill
 
-**Status:** In Development - Target Competition Submission: March 2026
+### Scenario 3: Side Effects
+Patient reports nausea → MedGemma validates severity → Suggests taking with food → Follows up in 3 days
+
+## Testing
+
+Run the included test scenarios:
+
+```bash
+python tests/test_scenario1.py  # Forgot medication
+python tests/test_scenario2.py  # Ran out
+python tests/test_scenario3.py  # Side effects
+```
+
+## Documentation
+
+- [Architecture](docs/ARCHITECTURE.md) - System design and components
+- [Knowledge Transfer](docs/KNOWLEDGE_TRANSFER.md) - Technical implementation details
+- [MVP Plan](docs/MVP_PLAN.md) - Development roadmap
+
+## Technology Stack
+
+- **Backend:** Python 3.12, Flask, Flask-SocketIO
+- **AI Model:** google/medgemma-1.5-4b-it via Hugging Face
+- **Database:** Firebase Firestore
+- **Frontend:** HTML5, JavaScript, TailwindCSS
+- **Orchestration:** Custom multi-agent system
+
+## License
+
+[Add your license here]
+
+## Contact
+
+For questions or collaboration opportunities, please open an issue on GitHub.
+
