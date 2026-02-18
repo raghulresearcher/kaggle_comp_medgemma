@@ -1,0 +1,33 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "adherence_logs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "patient_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "timestamp",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "interventions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "patient_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "created_at",
+          "order": "DESCENDING"
+        }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}
