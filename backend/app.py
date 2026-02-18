@@ -120,7 +120,7 @@ def patient_action():
         "patient_id": "p001",
         "action": "took|skipped|snoozed",
         "medication_id": "med_001",
-        "reason": "forgot|ran_out|side_effects|other",
+        "reason": "timing_conflict|supplement_interference|side_effects|other",
         "timestamp": "2026-02-17T08:00:00Z",
         "notes": "optional user notes"
     }

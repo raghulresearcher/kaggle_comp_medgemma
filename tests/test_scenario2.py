@@ -1,6 +1,6 @@
 """
-Test script for Scenario 2: Ran Out
-Tests the full workflow with action="skipped" and reason="ran_out"
+Test script for Scenario 2: Supplement Interference
+Tests the full workflow with action="skipped" and reason="supplement_interference"
 """
 import sys
 import os
@@ -10,10 +10,10 @@ from backend.agents.agent_init import initialize_agents
 from backend.agents.base_agent import orchestrator
 
 def test_scenario2():
-    """Test scenario 2: patient ran out of medication"""
+    """Test scenario 2: supplement interfering with medication"""
     
     print("=" * 80)
-    print("Testing Scenario 2: Ran Out")
+    print("Testing Scenario 2: Supplement Interference")
     print("=" * 80)
     
     # Initialize agents
@@ -25,9 +25,9 @@ def test_scenario2():
     test_data = {
         "patient_id": "p002",
         "action": "skipped",
-        "reason": "ran_out",
-        "medication_id": "med_metformin_500mg",
-        "notes": "Forgot to refill prescription",
+        "reason": "supplement_interference",
+        "medication_id": "med_levothyroxine_50mcg",
+        "notes": "Good adherence but labs worsening - recently started calcium and iron supplements",
         "timestamp": "2026-02-18T10:30:00.000Z"
     }
     

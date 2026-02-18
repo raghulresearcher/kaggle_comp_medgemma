@@ -127,14 +127,15 @@
    [✓ Took It] [⏰ Snooze] [❌ Skip]
 
 2. USER INTERACTION
-   Patient taps: [❌ Skip] → "I forgot"
+   Patient taps: [❌ Skip] → "Too confusing - timing conflict"
    ↓
    Mobile app sends to Firebase:
    {
      patient_id: "p001",
      action: "skip",
-     reason: "forgot",
-     timestamp: "2026-02-17T08:00:00Z"
+     reason: "timing_conflict",
+     timestamp: "2026-02-17T08:00:00Z",
+     notes: "Don't know when to take thyroid vs calcium vs metformin"
    }
 
 3. AGENT ACTIVATION
@@ -146,77 +147,79 @@
 
 4. INVESTIGATION PHASE
    InvestigationAgent:
-   - Queries Firestore: get_adherence_history(p001)
-   - Finds: 3 "forgot" events this week (all Monday AM)
-   - Analyzes: "Pattern detected - weekday morning rush"
+   - Queries Firestore: get_medication_list(p001)
+   - Finds: 3 medications with complex timing requirements
+   - Analyzes: "Multiple timing conflicts detected"
    ↓
    Streams to client via WebSocket:
    {
      type: "investigation_complete",
-     finding: "Monday morning pattern",
-     data: { skip_count: 3, pattern: "weekday_am" }
+     finding: "Medication timing complexity",
+     data: { medication_count: 3, complexity: "high" }
    }
 
 5. REMEDIATION PHASE
    RemediationAgent:
-   - Generates solutions based on pattern
-   - Options: [earlier_reminder, habit_linking, pill_placement]
+   - Calls MedGemma VM:
+     "Create optimal schedule for: Levothyroxine (empty stomach, 1hr before food),
+      Metformin (with food), Calcium (4hrs after thyroid)"
+   - MedGemma generates: Optimized schedule
    ↓
    Streams to client:
    {
      type: "remediation_proposed",
-     solution: "Move Monday reminder to 7:30 AM",
-     reasoning: "Avoids morning rush period"
+     solution: "6:30 AM - Levothyroxine, 7:30 AM - Breakfast + Metformin, 12:00 PM - Calcium",
+     reasoning: "Meets all medical timing requirements"
    }
 
 6. RISK ASSESSMENT
    RiskAssessmentAgent:
    - Calls MedGemma VM:
-     "Is it safe to take Metformin 30 min earlier?"
-   - MedGemma response: "Yes, safe. Timing flexibility OK."
+     "Validate safety of this schedule"
+   - MedGemma response: "Approved. No absorption conflicts."
    ↓
    Streams to client:
    {
      type: "safety_validated",
      verdict: "approved",
-     medgemma_reasoning: "Time shift is safe"
+     medgemma_reasoning: "Schedule is medically safe"
    }
 
 7. USER DECISION
-   Mobile shows options:
-   "Move Monday reminder to 7:30 AM?"
-   [Yes, try it] [No thanks] [Tell me more]
+   Mobile shows simplified schedule:
+   "New schedule to avoid confusion?"
+   [Yes, use this] [No thanks]
    ↓
-   User: "Yes, try it"
+   User: "Yes, use this"
 
 8. EXECUTION PHASE
    ExecutionAgent:
    - Updates Firebase schedule
-   - Firestore write: /patients/p001/schedule/monday = "07:30"
-   - Reschedules Firebase Cloud Function
+   - Firestore write: /patients/p001/schedule/optimized = true
+   - Updates all medication reminders
    ↓
    Confirmation to user:
-   "Done! I'll remind you at 7:30 AM on Mondays"
+   "Done! Clear instructions sent for each medication"
 
 9. LEARNING PHASE
    LearningAgent:
    - Logs intervention:
-     problem: "forgot_doses",
-     pattern: "monday_morning",
-     solution: "earlier_reminder",
+     problem: "timing_complexity",
+     pattern: "multiple_medications",
+     solution: "optimized_schedule",
      expected_outcome: "improved_adherence"
    - Updates ML model
-   - Schedules follow-up check (next Monday)
+   - Schedules follow-up check (in 1 week)
 
-10. FOLLOW-UP (Next Monday 7:30 AM)
-    Firebase sends earlier reminder
+10. FOLLOW-UP (Next Week)
+    System tracks adherence improvement
     ↓
-    Patient takes medication on time
+    Patient follows simplified schedule
     ↓
     LearningAgent records success
     ↓
     Positive reinforcement notification:
-    "Great! That's 3 days in a row! 🎯"
+    "Great! Following your new schedule perfectly! 🎯"
 ```
 
 ---
@@ -253,15 +256,15 @@
   "date": "2026-02-17",
   "doses": [
     {
-      "medication": "Metformin",
+      "medication": "Levothyroxine",
       "scheduled_time": "08:00",
       "actual_time": null,
       "status": "missed",
-      "reason": "forgot",
+      "reason": "timing_conflict",
       "context": {
         "day_of_week": "monday",
         "location": "home",
-        "activity": "morning_rush"
+        "activity": "confused_about_timing"
       }
     }
   ]
@@ -349,10 +352,10 @@ Logs patient medication action (took it, skipped, etc.)
 ```json
 {
   "patient_id": "p001",
-  "medication": "Metformin",
+  "medication": "Levothyroxine",
   "scheduled_time": "08:00",
   "action": "skip",
-  "reason": "forgot",
+  "reason": "timing_conflict",
   "timestamp": "2026-02-17T08:02:00Z"
 }
 ```
@@ -496,7 +499,7 @@ Medical reasoning and safety validation
 2. Push notification flow (simulated)
 3. Agent orchestration backend (working)
 4. MedGemma integration (deployed & tested)
-5. 3 complete scenarios (forgot, refill, side effects)
+5. 3 complete scenarios (timing conflict, supplement interference, side effects)
 6. Real-time reasoning display (WebSocket)
 7. Demo video (3-5 minutes)
 

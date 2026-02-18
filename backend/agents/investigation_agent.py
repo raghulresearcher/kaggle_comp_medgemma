@@ -243,10 +243,10 @@ class InvestigationAgent(BaseAgent):
             return root_cause
 
         # Reason-based root cause
-        if primary_reason == "forgot":
-            root_cause = "Memory/reminder issue: Patient frequently forgets"
-        elif primary_reason == "ran_out":
-            root_cause = "Supply chain issue: Medication running out"
+        if primary_reason == "timing_conflict":
+            root_cause = "Medication complexity: Patient confused about multiple medication timing requirements"
+        elif primary_reason == "supplement_interference":
+            root_cause = "Drug interaction: Supplements or OTC medications interfering with prescribed medication"
         elif primary_reason == "side_effects":
             root_cause = "Tolerability issue: Side effects affecting adherence"
         else:

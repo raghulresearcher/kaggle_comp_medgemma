@@ -448,7 +448,7 @@ class InvestigationAgent:
 
 ### **This Week:**
 1. Build AgentOrchestrator skeleton
-2. Implement Investigation Agent (Scenario 1: "Forgot")
+2. Implement Investigation Agent (Scenario 1: "Timing Conflict")
 3. Set up Flask backend in new project
 4. Copy SSE streaming logic
 

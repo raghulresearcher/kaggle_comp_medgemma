@@ -436,8 +436,13 @@ class AgentOrchestrator:
         
         # Determine which agents to run based on action and reason
         if action == "skipped":
-            # Full workflow for skipped doses
-            return self.execute_workflow(action_data)
+            # Check if medical reasoning (MedGemma) is needed
+            if reason in ["timing_conflict", "supplement_interference"]:
+                # Full workflow with MedGemma for complex medical decisions
+                return self.execute_workflow(action_data)
+            else:
+                # Full workflow for other skipped doses
+                return self.execute_workflow(action_data)
         
         elif action == "took":
             # Check if this is a side effects concern

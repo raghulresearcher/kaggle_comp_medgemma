@@ -111,11 +111,11 @@ medadhere-agentic-clean/
 
 ## Demo Scenarios
 
-### Scenario 1: Forgot Medication
-Patient forgets Monday morning doses → System detects pattern → Suggests earlier reminder → Tracks effectiveness
+### Scenario 1: Medication Timing Conflict
+Patient confused about when to take multiple medications (thyroid, calcium, metformin) → System detects timing complexity → MedGemma creates optimized schedule → Patient receives clear instructions
 
-### Scenario 2: Ran Out of Medication
-Patient out of medication → System checks pharmacy → Facilitates refill → Sets up auto-refill
+### Scenario 2: Supplement Interference
+Patient has good adherence but labs worsening → System detects new calcium/iron supplements → MedGemma identifies absorption interference → Adjusts timing to prevent interaction
 
 ### Scenario 3: Side Effects
 Patient reports nausea → MedGemma validates severity → Suggests taking with food → Follows up in 3 days
@@ -125,8 +125,8 @@ Patient reports nausea → MedGemma validates severity → Suggests taking with 
 Run the included test scenarios:
 
 ```bash
-python tests/test_scenario1.py  # Forgot medication
-python tests/test_scenario2.py  # Ran out
+python tests/test_scenario1.py  # Medication timing conflict
+python tests/test_scenario2.py  # Supplement interference
 python tests/test_scenario3.py  # Side effects
 ```
 

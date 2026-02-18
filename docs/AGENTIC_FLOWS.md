@@ -31,9 +31,12 @@ graph TB
 
 ---
 
-## Scenario 1: Patient Forgot Medication
+## Scenario 1: Medication Timing Conflict
 
-**Trigger:** `action="skipped"`, `reason="forgot"`
+**Trigger:** `action="skipped"`, `reason="timing_conflict"`
+
+### Patient Problem
+Patient has multiple medications with complex timing requirements (empty stomach, with food, 4 hours apart). Patient skips doses due to confusion about when to take each medication.
 
 ### Workflow Flow
 
@@ -50,82 +53,88 @@ sequenceDiagram
     participant DB as Firebase
     participant AI as MedGemma
 
-    Patient->>UI: Reports "Skipped - Forgot"
+    Patient->>UI: Reports "Skipped - Too confusing"
     UI->>Orch: Patient Action Data
     
     rect rgb(200, 220, 240)
         Note over Orch,Inv: Agent 1: Investigation
         Orch->>Inv: Analyze Pattern
-        Inv->>DB: Query adherence history
-        DB-->>Inv: Last 30 days data
-        Inv->>Inv: Detect pattern:<br/>Forgets Mondays
-        Inv-->>Orch: Pattern: "Behavioral - Day of week"
+        Inv->>DB: Query medication list
+        DB-->>Inv: 3 medications:<br/>Levothyroxine, Metformin, Calcium
+        Inv->>DB: Check timing requirements
+        DB-->>Inv: Complex rules detected
+        Inv->>Inv: Pattern: Patient skips morning doses<br/>Root cause: Timing confusion
+        Inv-->>Orch: Issue: "Multiple medication timing conflicts"
     end
     
     rect rgb(255, 230, 200)
         Note over Orch,Rem: Agent 2: Remediation
         Orch->>Rem: Create Solution
-        Rem->>Rem: Design intervention:<br/>Earlier reminder on Mondays
-        Rem-->>Orch: Intervention Plan
+        Rem->>AI: MedGemma consult:<br/>"Create optimal schedule for:<br/>Levothyroxine (empty stomach, 1hr before food)<br/>Metformin (with food)<br/>Calcium (4hrs after levothyroxine)"
+        AI-->>Rem: Optimized schedule:<br/>6:30 AM - Levothyroxine<br/>7:30 AM - Breakfast + Metformin<br/>12:00 PM - Calcium
+        Rem-->>Orch: Simplified schedule + clear instructions
     end
     
     rect rgb(255, 200, 200)
         Note over Orch,Risk: Agent 3: Risk Assessment
         Orch->>Risk: Validate Safety
-        Risk->>AI: Check timing change safety
-        AI-->>Risk: Safe - No drug interactions
-        Risk-->>Orch: Approved (Risk: Low)
+        Risk->>AI: Check: Is timing medically safe?<br/>Any absorption conflicts?
+        AI-->>Risk: Approved - meets all requirements<br/>No drug interactions with timing
+        Risk-->>Orch: Medically validated (Risk: Low)
     end
     
     rect rgb(230, 200, 250)
         Note over Orch,Exec: Agent 4: Execution
         Orch->>Exec: Implement Solution
-        Exec->>DB: Update reminder schedule
-        Exec->>Patient: Notification: "Adjusted your Monday reminder"
-        Exec-->>Orch: Executed successfully
+        Exec->>DB: Update medication schedule
+        Exec->>Patient: Clear instructions:<br/>"6:30 AM - Thyroid pill (empty stomach)<br/>7:30 AM - Breakfast + Diabetes pill<br/>12:00 PM - Calcium"
+        Exec-->>Orch: Patient notified + schedule updated
     end
     
     rect rgb(200, 240, 240)
         Note over Orch,Learn: Agent 5: Learning
         Orch->>Learn: Track Outcome
-        Learn->>DB: Store intervention details
-        Learn->>Learn: Pattern type: Behavioral<br/>Success rate: 78%
+        Learn->>DB: Store timing pattern
+        Learn->>Learn: Pattern type: Timing complexity<br/>Solution: Simplified schedule<br/>Success rate: Track adherence
         Learn-->>Orch: Learning complete
     end
     
     Orch->>UI: Workflow Complete
-    UI->>Patient: Show summary
+    UI->>Patient: Show simplified schedule
 ```
 
 ### Decision Points
 
 ```mermaid
 graph TD
-    Start[Patient Skipped: Forgot] --> CheckPattern{Pattern<br/>Detected?}
-    CheckPattern -->|Yes| Behavioral[Behavioral Pattern:<br/>Day of Week]
-    CheckPattern -->|No| General[General Support]
+    Start[Patient Skipped:<br/>Timing Conflict] --> CheckMeds{Multiple<br/>Medications?}
+    CheckMeds -->|Yes| Analyze[Analyze Timing<br/>Requirements]
+    CheckMeds -->|No| Simple[Simple Reminder]
     
-    Behavioral --> CreatePlan[Create Targeted<br/>Reminder Adjustment]
-    General --> BasicPlan[Send Encouragement]
+    Analyze --> MedGemma[MedGemma: Create<br/>Optimal Schedule]
+    MedGemma --> Validate{Medically<br/>Safe?}
     
-    CreatePlan --> ValidateRisk{Risk<br/>Assessment}
-    ValidateRisk -->|Low Risk| Execute[Execute Change]
-    ValidateRisk -->|High Risk| HumanReview[Flag for<br/>Human Review]
+    Validate -->|Yes| Simplify[Generate Clear<br/>Instructions]
+    Validate -->|No| Doctor[Flag for<br/>Doctor Review]
     
+    Simplify --> Execute[Update Schedule +<br/>Send to Patient]
     Execute --> Monitor[Monitor Adherence]
     Monitor --> Learn[Update Success Metrics]
     
     style Start fill:#FFE4B5
-    style Behavioral fill:#90EE90
+    style MedGemma fill:#FFD700
     style Execute fill:#87CEEB
     style Learn fill:#DDA0DD
 ```
 
 ---
 
-## Scenario 2: Patient Ran Out of Medication
+## Scenario 2: Supplement Interference
 
-**Trigger:** `action="skipped"`, `reason="ran_out"`
+**Trigger:** `action="skipped"`, `reason="supplement_interference"`
+
+### Patient Problem
+Patient has excellent adherence (98%) but lab results are worsening. Recently started taking calcium and iron supplements that are blocking thyroid medication absorption by 50%.
 
 ### Workflow Flow
 
@@ -142,81 +151,84 @@ sequenceDiagram
     participant DB as Firebase
     participant AI as MedGemma
 
-    Patient->>UI: Reports "Skipped - Ran Out"
+    Patient->>UI: Reports "Good adherence but labs worse"
     UI->>Orch: Patient Action Data
     
     rect rgb(200, 220, 240)
         Note over Orch,Inv: Agent 1: Investigation
-        Orch->>Inv: Analyze Supply Issue
-        Inv->>DB: Query medication inventory
-        Inv->>DB: Check refill history
-        DB-->>Inv: Last refill: 25 days ago<br/>Supply should last 30 days
-        Inv->>Inv: Pattern: Runs out early<br/>Possible adherence gap
-        Inv-->>Orch: Root Cause: "Supply management issue"
+        Orch->>Inv: Analyze Discrepancy
+        Inv->>DB: Query adherence history
+        DB-->>Inv: 98% adherence - excellent!
+        Inv->>DB: Check recent changes
+        DB-->>Inv: New supplements: Calcium + Iron<br/>Started 2 weeks ago
+        Inv->>Inv: Timeline matches lab decline<br/>Hypothesis: Supplement interference
+        Inv-->>Orch: Root Cause: "Supplement blocking medication"
     end
     
     rect rgb(255, 230, 200)
         Note over Orch,Rem: Agent 2: Remediation
-        Orch->>Rem: Create Supply Solution
-        Rem->>Rem: Plan intervention:<br/>1. Refill reminder at 5 days left<br/>2. Setup auto-refill
-        Rem-->>Orch: Multi-step intervention plan
+        Orch->>Rem: Create Solution
+        Rem->>AI: MedGemma consult:<br/>"Patient taking Levothyroxine + Calcium + Iron.<br/>Labs worsening despite adherence.<br/>Check interactions and suggest timing."
+        AI-->>Rem: Analysis:<br/>- Calcium reduces thyroid absorption 50%<br/>- Iron reduces absorption 50%<br/>- Require 4+ hour separation<br/>Recommendation: Take supplements afternoon
+        Rem-->>Orch: Timing adjustment plan
     end
     
     rect rgb(255, 200, 200)
-        Note over Orch,Risk: Agent 3: Risk Assessment
-        Orch->>Risk: Validate Urgency
-        Risk->>AI: Check medication criticality
-        AI-->>Risk: Critical medication<br/>Gap risk: High
-        Risk-->>Orch: Urgent action required
+        Note over Orch,Risk: Agent 3: Risk Assessment (CRITICAL)
+        Orch->>Risk: Validate Intervention
+        Risk->>AI: Confirm: Is 4-hour separation sufficient?<br/>Any other interactions?
+        AI-->>Risk: Validated:<br/>- 4 hours prevents interference<br/>- Safe to continue all medications<br/>- Recheck labs in 6 weeks
+        Risk-->>Orch: Approved with follow-up
     end
     
     rect rgb(230, 200, 250)
         Note over Orch,Exec: Agent 4: Execution
-        Orch->>Exec: Execute Urgently
-        Exec->>DB: Find nearest pharmacy
-        Exec->>Patient: "Pharmacy ABC has your Rx<br/>Ready in 2 hours"
-        Exec->>DB: Enable auto-refill at 7 days
-        Exec-->>Orch: Actions completed
+        Orch->>Exec: Implement Timing Change
+        Exec->>DB: Update schedule:<br/>6:00 AM - Levothyroxine<br/>12:00 PM - Calcium + Iron
+        Exec->>Patient: Education:<br/>"Your supplements were blocking thyroid medication.<br/>New schedule prevents interference."
+        Exec->>DB: Schedule lab recheck in 6 weeks
+        Exec-->>Orch: Schedule updated + patient educated
     end
     
     rect rgb(200, 240, 240)
         Note over Orch,Learn: Agent 5: Learning
-        Orch->>Learn: Track Supply Pattern
-        Learn->>DB: Update patient profile:<br/>"Requires early refill alerts"
-        Learn->>Learn: Adjust future thresholds
-        Learn-->>Orch: Profile updated
+        Orch->>Learn: Track Resolution
+        Learn->>DB: Store supplement pattern
+        Learn->>Learn: Knowledge:<br/>Calcium/Iron block levothyroxine<br/>4-hour separation effective<br/>Flag: Auto-detect supplement additions
+        Learn-->>Orch: Pattern learned
     end
     
     Orch->>UI: Workflow Complete
-    UI->>Patient: Show refill options
+    UI->>Patient: Show new schedule + follow-up date
 ```
 
-### Decision Tree
+### MedGemma Decision Flow
 
 ```mermaid
 graph TD
-    Start[Patient Ran Out] --> CheckHistory{Previous<br/>Ran Out<br/>Events?}
-    CheckHistory -->|First Time| OneTime[One-time Issue]
-    CheckHistory -->|Recurring| Pattern[Supply Pattern]
+    Start[Supplement Detected] --> MedGemma{MedGemma<br/>Analysis}
     
-    OneTime --> BasicRefill[Send Refill Reminder]
-    Pattern --> Investigate[Deep Investigation]
+    MedGemma --> CheckInteraction[Check Drug-Supplement<br/>Interactions]
     
-    Investigate --> FindCause{Root Cause?}
-    FindCause -->|Forgets to Refill| AutoRefill[Enable Auto-Refill]
-    FindCause -->|Financial| Assistance[Connect to Assistance Programs]
-    FindCause -->|Pharmacy Issues| ChangePharmacy[Suggest Pharmacy Change]
+    CheckInteraction --> Severity{Interaction<br/>Severity}
     
-    AutoRefill --> Implement[Implement Solution]
-    Assistance --> Implement
-    ChangePharmacy --> Implement
+    Severity -->|No Interaction| Continue[Continue Current<br/>Schedule]
+    Severity -->|Timing Issue| Separate[Calculate Required<br/>Separation Time]
+    Severity -->|Contraindicated| Stop[Recommend<br/>Discontinuation]
     
-    Implement --> Monitor[Monitor Next Cycle]
-    Monitor --> Learn[Update Success Metrics]
+    Separate --> Schedule[Create New<br/>Schedule]
+    Schedule --> Validate[MedGemma Validates<br/>Safety]
+    
+    Validate --> Implement[Implement +<br/>Educate Patient]
+    Stop --> Doctor[Alert Doctor]
+    
+    Implement --> FollowUp[Schedule Lab<br/>Follow-Up]
+    FollowUp --> Learn[Track Outcome]
     
     style Start fill:#FFE4B5
-    style Pattern fill:#FFB6C1
-    style Implement fill:#87CEEB
+    style MedGemma fill:#FFD700
+    style Severity fill:#FF6B6B
+    style Implement fill:#90EE90
     style Learn fill:#DDA0DD
 ```
 
@@ -370,16 +382,17 @@ graph LR
 
 ## Key Differences Across Scenarios
 
-| Aspect | Scenario 1: Forgot | Scenario 2: Ran Out | Scenario 3: Side Effects |
-|--------|-------------------|---------------------|--------------------------|
-| **Trigger** | Skipped/Forgot | Skipped/Ran Out | Took/Side Effects |
-| **Investigation Focus** | Behavioral patterns | Supply management | Medical symptoms |
-| **Remediation Type** | Timing adjustment | Refill automation | Dosing guidance |
-| **Risk Level** | Low | Medium-High | Variable (Mild-Severe) |
-| **MedGemma Role** | Optional | Optional | **Critical** |
-| **Urgency** | Standard | High | Immediate |
-| **Follow-Up** | Track adherence | Monitor next refill | Symptom check in 3 days |
-| **Learning Focus** | Behavior patterns | Supply patterns | Side effect management |
+| Aspect | Scenario 1: Timing Conflict | Scenario 2: Supplement Interference | Scenario 3: Side Effects |
+|--------|---------------------------|-----------------------------------|--------------------------|
+| **Trigger** | Skipped/Timing Conflict | Skipped/Supplement Interference | Took/Side Effects |
+| **Investigation Focus** | Medication timing complexity | Drug-supplement interactions | Medical symptoms |
+| **Remediation Type** | Optimized schedule | Timing separation | Dosing guidance |
+| **Risk Level** | Low | Medium | Variable (Mild-Severe) |
+| **MedGemma Role** | **Critical** | **Critical** | **Critical** |
+| **Urgency** | Standard | Medium | Immediate |
+| **Follow-Up** | Track adherence improvement | Lab recheck in 6 weeks | Symptom check in 3 days |
+| **Learning Focus** | Timing complexity patterns | Supplement interference patterns | Side effect management |
+| **Adherence Barrier** | "Too confusing to take" | "Taking it but not working" | "Can't tolerate it" |
 
 ---
 

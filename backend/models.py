@@ -47,7 +47,7 @@ class AdherenceLog(BaseModel):
     patient_id: str
     medication_id: str
     action: str  # "took", "skipped", "snoozed"
-    reason: Optional[str] = None  # "forgot", "ran_out", "side_effects", "other"
+    reason: Optional[str] = None  # "timing_conflict", "supplement_interference", "side_effects", "other"
     notes: Optional[str] = None
     timestamp: str
     created_at: Optional[str] = None

@@ -55,9 +55,9 @@
             <div class="grid md:grid-cols-3 gap-4">
                 <!-- Scenario 1 -->
                 <div class="border-2 border-indigo-200 rounded-lg p-5 hover:border-indigo-400 transition">
-                    <div class="text-4xl mb-3 text-center">🧠</div>
-                    <h3 class="text-xl font-bold text-gray-800 mb-2">Scenario 1: I Forgot</h3>
-                    <p class="text-sm text-gray-600 mb-4">Patient repeatedly forgets medication on Tuesdays. System detects pattern and adjusts reminder timing.</p>
+                    <div class="text-4xl mb-3 text-center">⏰</div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Scenario 1: Timing Conflict</h3>
+                    <p class="text-sm text-gray-600 mb-4">Patient confused about when to take multiple medications. MedGemma creates optimized schedule.</p>
                     <button onclick="runScenario(1)" class="w-full bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition">
                         Run Scenario
                     </button>
@@ -65,9 +65,9 @@
 
                 <!-- Scenario 2 -->
                 <div class="border-2 border-green-200 rounded-lg p-5 hover:border-green-400 transition">
-                    <div class="text-4xl mb-3 text-center">📦</div>
-                    <h3 class="text-xl font-bold text-gray-800 mb-2">Scenario 2: Ran Out</h3>
-                    <p class="text-sm text-gray-600 mb-4">Patient runs out of medication. System locates pharmacies and sets up auto-refill.</p>
+                    <div class="text-4xl mb-3 text-center">💊</div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Scenario 2: Supplement Interference</h3>
+                    <p class="text-sm text-gray-600 mb-4">Patient taking supplements that block medication. MedGemma detects interference and adjusts timing.</p>
                     <button onclick="runScenario(2)" class="w-full bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">
                         Run Scenario
                     </button>
@@ -165,16 +165,16 @@
             1: {
                 patient_id: "p001",
                 action: "skipped",
-                reason: "forgot",
-                medication_id: "med_lisinopril_10mg",
-                notes: "Didn't see the reminder this morning"
+                reason: "timing_conflict",
+                medication_id: "med_levothyroxine_50mcg",
+                notes: "Too confusing - don't know when to take thyroid med vs calcium vs metformin"
             },
             2: {
                 patient_id: "p002",
                 action: "skipped",
-                reason: "ran_out",
-                medication_id: "med_metformin_500mg",
-                notes: "Forgot to refill prescription"
+                reason: "supplement_interference",
+                medication_id: "med_levothyroxine_50mcg",
+                notes: "Good adherence but labs worsening - recently started calcium and iron supplements"
             },
             3: {
                 patient_id: "p003",

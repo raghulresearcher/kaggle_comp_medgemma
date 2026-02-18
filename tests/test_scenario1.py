@@ -1,6 +1,6 @@
 """
-Test script for Scenario 1: I Forgot
-Tests the full workflow with action="skipped" and reason="forgot"
+Test script for Scenario 1: Medication Timing Conflict
+Tests the full workflow with action="skipped" and reason="timing_conflict"
 """
 import sys
 import os
@@ -10,10 +10,10 @@ from backend.agents.agent_init import initialize_agents
 from backend.agents.base_agent import orchestrator
 
 def test_scenario1():
-    """Test scenario 1: patient forgot medication"""
+    """Test scenario 1: patient confused about medication timing"""
     
     print("=" * 80)
-    print("Testing Scenario 1: I Forgot")
+    print("Testing Scenario 1: Medication Timing Conflict")
     print("=" * 80)
     
     # Initialize agents
@@ -25,9 +25,9 @@ def test_scenario1():
     test_data = {
         "patient_id": "p001",
         "action": "skipped",
-        "reason": "forgot",
-        "medication_id": "med_lisinopril_10mg",
-        "notes": "Didn't see the reminder this morning",
+        "reason": "timing_conflict",
+        "medication_id": "med_levothyroxine_50mcg",
+        "notes": "Too confusing - don't know when to take thyroid med vs calcium vs metformin",
         "timestamp": "2026-02-18T10:30:00.000Z"
     }
     
