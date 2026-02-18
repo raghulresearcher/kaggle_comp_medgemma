@@ -132,9 +132,9 @@ python tests/test_scenario3.py  # Side effects
 
 ## Documentation
 
-- [Architecture](docs/ARCHITECTURE.md) - System design and components
-- [Knowledge Transfer](docs/KNOWLEDGE_TRANSFER.md) - Technical implementation details
-- [MVP Plan](docs/MVP_PLAN.md) - Development roadmap
+- [Architecture](docs/ARCHITECTURE.md) - Current system design and components
+- [Agentic Flows](docs/AGENTIC_FLOWS.md) - Multi-agent workflow diagrams
+- [Mobile Architecture](docs/MOBILE_ARCHITECTURE.md) - Production mobile-first architecture with external integrations
 
 ## Technology Stack
 
