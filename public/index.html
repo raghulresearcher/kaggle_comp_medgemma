@@ -52,7 +52,7 @@
         <!-- Scenarios -->
         <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
             <h2 class="text-2xl font-bold text-gray-800 mb-4">🎬 Demo Scenarios</h2>
-            <div class="grid md:grid-cols-3 gap-4">
+            <div class="grid md:grid-cols-2 gap-4">
                 <!-- Scenario 1 -->
                 <div class="border-2 border-indigo-200 rounded-lg p-5 hover:border-indigo-400 transition">
                     <div class="text-4xl mb-3 text-center">⏰</div>
@@ -79,6 +79,42 @@
                     <h3 class="text-xl font-bold text-gray-800 mb-2">Scenario 3: Side Effects</h3>
                     <p class="text-sm text-gray-600 mb-4">Patient experiences nausea. MedGemma assesses severity and suggests taking with food.</p>
                     <button onclick="runScenario(3)" class="w-full bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition">
+                        Run Scenario
+                    </button>
+                </div>
+
+                <!-- Scenario 4 -->
+                <div class="border-2 border-purple-200 rounded-lg p-5 hover:border-purple-400 transition">
+                    <div class="text-4xl mb-3 text-center">📸</div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Scenario 4: Healing Tracker</h3>
+                    <p class="text-sm text-gray-600 mb-4">Patient monitors allopurinol rash with daily photos (Day 3, 4, 5). MedGemma Vision analyzes healing progression.</p>
+                    <div class="mb-3 space-y-2">
+                        <div>
+                            <label class="text-xs text-gray-600 font-semibold">Day 3 (Baseline):</label>
+                            <input type="file" id="imageDay3" accept="image/*" class="hidden">
+                            <button onclick="document.getElementById('imageDay3').click()" class="w-full bg-gray-200 text-gray-700 px-2 py-1 rounded text-xs hover:bg-gray-300 transition">
+                                📷 Upload Day 3 Photo
+                            </button>
+                            <div id="previewDay3" class="text-xs text-green-600 hidden mt-1">✓ Selected</div>
+                        </div>
+                        <div>
+                            <label class="text-xs text-gray-600 font-semibold">Day 4 (Follow-up):</label>
+                            <input type="file" id="imageDay4" accept="image/*" class="hidden">
+                            <button onclick="document.getElementById('imageDay4').click()" class="w-full bg-gray-200 text-gray-700 px-2 py-1 rounded text-xs hover:bg-gray-300 transition">
+                                📷 Upload Day 4 Photo
+                            </button>
+                            <div id="previewDay4" class="text-xs text-green-600 hidden mt-1">✓ Selected</div>
+                        </div>
+                        <div>
+                            <label class="text-xs text-gray-600 font-semibold">Day 5 (Follow-up):</label>
+                            <input type="file" id="imageDay5" accept="image/*" class="hidden">
+                            <button onclick="document.getElementById('imageDay5').click()" class="w-full bg-gray-200 text-gray-700 px-2 py-1 rounded text-xs hover:bg-gray-300 transition">
+                                📷 Upload Day 5 Photo
+                            </button>
+                            <div id="previewDay5" class="text-xs text-green-600 hidden mt-1">✓ Selected</div>
+                        </div>
+                    </div>
+                    <button onclick="runScenario(4)" class="w-full bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition">
                         Run Scenario
                     </button>
                 </div>
@@ -148,8 +184,13 @@
 
             <!-- Reasoning Trace -->
             <div id="reasoningTrace" class="mt-6 bg-gray-50 rounded-lg p-4">
-                <h3 class="text-lg font-bold text-gray-800 mb-3">💭 Reasoning Trace</h3>
-                <div id="reasoningContent" class="space-y-1 text-sm font-mono">
+                <div class="flex items-center justify-between mb-3 cursor-pointer" onclick="toggleReasoningTrace()">
+                    <h3 class="text-lg font-bold text-gray-800">💭 Reasoning Trace</h3>
+                    <button class="text-indigo-600 hover:text-indigo-800 font-semibold text-sm">
+                        <span id="reasoningToggle">▼ Expand</span>
+                    </button>
+                </div>
+                <div id="reasoningContent" class="space-y-1 text-sm font-mono hidden max-h-96 overflow-y-auto">
                     <!-- Will be populated dynamically -->
                 </div>
             </div>
@@ -182,8 +223,46 @@
                 reason: "side_effects",
                 medication_id: "med_metformin_500mg",
                 notes: "Feeling nauseous after taking"
+            },
+            4: {
+                patient_id: "p004",
+                action: "took",
+                reason: "side_effects",
+                medication_id: "med_allopurinol_300mg",
+                notes: "Red itchy rash on arms and torso started yesterday. Should I stop taking this?",
+                image_day: 3
             }
         };
+
+        // Handle image upload preview
+        document.addEventListener('DOMContentLoaded', () => {
+            // Handle Day 3 image
+            const imageDay3 = document.getElementById('imageDay3');
+            const previewDay3 = document.getElementById('previewDay3');
+            if (imageDay3) {
+                imageDay3.addEventListener('change', (e) => {
+                    previewDay3.classList.toggle('hidden', !e.target.files || !e.target.files[0]);
+                });
+            }
+            
+            // Handle Day 4 image
+            const imageDay4 = document.getElementById('imageDay4');
+            const previewDay4 = document.getElementById('previewDay4');
+            if (imageDay4) {
+                imageDay4.addEventListener('change', (e) => {
+                    previewDay4.classList.toggle('hidden', !e.target.files || !e.target.files[0]);
+                });
+            }
+            
+            // Handle Day 5 image
+            const imageDay5 = document.getElementById('imageDay5');
+            const previewDay5 = document.getElementById('previewDay5');
+            if (imageDay5) {
+                imageDay5.addEventListener('change', (e) => {
+                    previewDay5.classList.toggle('hidden', !e.target.files || !e.target.files[0]);
+                });
+            }
+        });
 
         // Load system status on page load
         window.onload = async () => {
@@ -218,6 +297,80 @@
             const scenario = scenarios[scenarioNum];
             const timestamp = new Date().toISOString();
             
+            // Handle multiple images for Scenario 4
+            if (scenarioNum === 4) {
+                const images = [];
+                const imageInputs = [
+                    { id: 'imageDay3', day: 3 },
+                    { id: 'imageDay4', day: 4 },
+                    { id: 'imageDay5', day: 5 }
+                ];
+                
+                // Collect all uploaded images
+                for (const { id, day } of imageInputs) {
+                    const input = document.getElementById(id);
+                    if (input && input.files && input.files[0]) {
+                        const imageData = await new Promise((resolve) => {
+                            const reader = new FileReader();
+                            reader.onload = (e) => resolve(e.target.result);
+                            reader.readAsDataURL(input.files[0]);
+                        });
+                        images.push({ day, image: imageData });
+                    }
+                }
+                
+                // Add images to scenario data
+                const scenarioData = { ...scenario, timestamp };
+                if (images.length > 0) {
+                    // For temporal analysis: first image is current, rest are previous
+                    scenarioData.image = images[images.length - 1].image;  // Most recent
+                    scenarioData.image_day = images[images.length - 1].day;
+                    scenarioData.previous_images = images.slice(0, -1).map(img => img.image);
+                    scenarioData.notes = `Day ${images[images.length - 1].day} update. ${scenario.notes}`;
+                }
+                
+                // Show workflow section
+                document.getElementById('workflowSection').classList.remove('hidden');
+                document.getElementById('workflowSummary').classList.add('hidden');
+                document.getElementById('agentResults').innerHTML = '<div class="text-center loading text-gray-500">🔄 Starting workflow...</div>';
+                document.getElementById('reasoningContent').innerHTML = '';
+                document.getElementById('progressFill').style.width = '0%';
+                document.getElementById('progressText').textContent = '0/5 agents';
+                
+                // Run workflow
+                try {
+                    const response = await fetch(`${API_BASE}/api/patient-action`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(scenarioData)
+                    });
+
+                    const data = await response.json();
+
+                    if (data.workflow_id) {
+                        document.getElementById('workflowId').textContent = `Workflow: ${data.workflow_id}`;
+                        
+                        // For async workflows, poll for status
+                        if (!data.result) {
+                            pollWorkflowStatus(data.workflow_id);
+                        } else {
+                            displayWorkflowResult(data.result);
+                        }
+                    } else {
+                        document.getElementById('agentResults').innerHTML = '<div class="text-yellow-600">⚠️ Action logged but no workflow triggered</div>';
+                    }
+
+                    await loadWorkflows();
+                } catch (error) {
+                    console.error('Error running scenario:', error);
+                    document.getElementById('agentResults').innerHTML = `<div class="text-red-600">❌ Error: ${error.message}</div>`;
+                }
+                return;
+            }
+            
+            // For other scenarios - regular flow
+            const scenarioData = { ...scenario, timestamp };
+            
             // Show workflow section
             document.getElementById('workflowSection').classList.remove('hidden');
             document.getElementById('workflowSummary').classList.add('hidden');
@@ -230,7 +383,7 @@
                 const response = await fetch(`${API_BASE}/api/patient-action`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ ...scenario, timestamp })
+                    body: JSON.stringify(scenarioData)
                 });
 
                 const data = await response.json();
@@ -434,6 +587,18 @@
             } else {
                 content.classList.add('hidden');
                 toggle.textContent = '▼ Show Detailed Analysis';
+            }
+        }
+
+        function toggleReasoningTrace() {
+            const content = document.getElementById('reasoningContent');
+            const toggle = document.getElementById('reasoningToggle');
+            if (content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                toggle.textContent = '▲ Collapse';
+            } else {
+                content.classList.add('hidden');
+                toggle.textContent = '▼ Expand';
             }
         }
     </script>

@@ -78,9 +78,32 @@ class RiskAssessmentAgent(BaseAgent):
         
         self.reasoning_steps.append("🧠 Connecting to MedGemma for medical validation...")
         
-        # Get patient context
+        # Get patient context - check both current_action and root level (for backwards compatibility)
         current_action = input_data.get("current_action", {})
+        if not current_action:
+            # Fallback: treat input_data as the action itself (for trigger data)
+            current_action = input_data
         investigation = input_data.get("investigation_output", {})
+        
+        # Check if this is a side effect with image - handle vision analysis FIRST
+        if current_action.get("reason") == "side_effects" and current_action.get("image"):
+            self.reasoning_steps.append("📸 Image detected with side effects - activating vision analysis")
+            # Create a special intervention for vision analysis
+            vision_result = self._assess_with_vision({}, current_action)
+            return {
+                "approved": vision_result.get("approved", True),
+                "overall_risk_level": vision_result.get("risk_level", "low"),
+                "intervention_assessments": [vision_result],
+                "medgemma_consulted": True,
+                "vision_analysis_performed": vision_result.get("vision_analysis_performed", True),
+                "temporal_comparison": vision_result.get("temporal_comparison", False),
+                "healing_trend": vision_result.get("healing_trend", "unknown"),
+                "recommendations": [
+                    vision_result.get("reason", "Vision analysis completed"),
+                    "Continue daily photo monitoring" if vision_result.get("approved") else "Consult healthcare provider"
+                ],
+                "reasoning": self.reasoning_steps
+            }
         
         # Assess each intervention
         interventions = remediation.get("interventions", [])
@@ -206,11 +229,11 @@ class RiskAssessmentAgent(BaseAgent):
         intervention: Dict[str, Any],
         current_action: Dict[str, Any]
     ) -> Dict[str, Any]:
-        """Use MedGemma to assess side effect severity"""
+        """Use MedGemma to assess side effect severity (with vision if image present)"""
         
         reason = current_action.get("reason", "")
         
-        if reason != "side_effects":
+        if reason != "side_effects" and not reason.startswith("side_effect"):
             return {
                 "intervention_type": "medgemma_consult",
                 "risk_level": "low",
@@ -218,6 +241,11 @@ class RiskAssessmentAgent(BaseAgent):
                 "reason": "No side effects reported"
             }
         
+        # Check if image is present - use vision analysis for side effects with photos
+        if current_action.get("image"):
+            return self._assess_with_vision(intervention, current_action)
+        
+        # Text-only side effect assessment
         # Create prompt for side effect assessment
         prompt = create_medical_prompt(
             question=(
@@ -266,6 +294,125 @@ class RiskAssessmentAgent(BaseAgent):
                 "risk_level": "medium",
                 "approved": False,
                 "reason": "MedGemma unavailable - recommend manual review"
+            }
+    
+    def _assess_with_vision(
+        self,
+        intervention: Dict[str, Any],
+        current_action: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Use MedGemma Vision API to analyze medical images (e.g., side effect photos)"""
+        
+        image_data = current_action.get("image", "")
+        notes = current_action.get("notes", "")
+        image_day = current_action.get("image_day", 1)
+        previous_images = current_action.get("previous_images", [])
+        
+        self.reasoning_steps.append(f"📸 Image detected (Day {image_day}) - activating MedGemma Vision analysis...")
+        
+        # Build vision analysis prompt
+        if previous_images:
+            # Temporal comparison mode
+            prompt = create_medical_prompt(
+                question=(
+                    f"Patient reports: {notes}\n\n"
+                    f"Analyzing Day {image_day} photo of side effect with {len(previous_images)} previous photo(s) for temporal comparison.\n"
+                    "Please analyze the current image and compare with previous images to assess:\n"
+                    "1. Lesion count and distribution pattern\n"
+                    "2. Redness intensity and inflammation level\n"
+                    "3. Healing trajectory (improving, stable, worsening)\n"
+                    "4. Safety recommendation: Continue medication vs Stop immediately\n"
+                ),
+                format_instructions=(
+                    "Respond with:\n"
+                    "- Temporal Analysis: Compare Day 1 → Current Day\n"
+                    "- Lesion Count Change: Percentage change\n"
+                    "- Redness Intensity: Decreasing/Stable/Increasing\n"
+                    "- Healing Trend: Clear improvement/No change/Worsening\n"
+                    "- Recommendation: Continue with monitoring / Stop medication immediately\n"
+                    "- Reasoning: Brief clinical explanation"
+                )
+            )
+            self.reasoning_steps.append(f"🔬 Performing temporal analysis (Day 3 → Day {image_day})...")
+        else:
+            # Initial baseline assessment
+            prompt = create_medical_prompt(
+                question=(
+                    f"Patient reports: {notes}\n\n"
+                    "Please analyze this medical image (baseline Day 3 photo) to assess:\n"
+                    "1. Severity of side effect (mild/moderate/severe)\n"
+                    "2. Lesion characteristics and distribution\n"
+                    "3. Signs of infection or complications\n"
+                    "4. Initial safety recommendation\n"
+                ),
+                format_instructions=(
+                    "Respond with:\n"
+                    "- Severity: Mild/Moderate/Severe\n"
+                    "- Description: Visual characteristics\n"
+                    "- Immediate Concerns: Any red flags\n"
+                    "- Recommendation: Monitor with daily photos / Seek immediate care\n"
+                    "- Reasoning: Clinical rationale"
+                )
+            )
+            self.reasoning_steps.append("📋 Performing baseline assessment (initial photo)...")
+        
+        try:
+            # Call MedGemma Vision API with actual image data
+            # The endpoint is configured as image-text-to-text (multimodal)
+            response = self.llm.invoke(
+                prompt,
+                image=image_data,  # Pass base64 image to multimodal endpoint
+                previous_images=previous_images  # For temporal comparison context
+            )
+            
+            # Successfully consulted MedGemma Vision
+            self.medgemma_actually_consulted = True
+            
+            # Parse response for key indicators
+            improving = any(word in response.lower() for word in ["improving", "better", "healing", "decreasing"])
+            worsening = any(word in response.lower() for word in ["worsening", "worse", "spreading", "severe"])
+            
+            # Determine risk level based on vision analysis
+            if worsening:
+                risk_level = "high"
+                approved = False
+                healing_trend = "worsening"
+            elif improving:
+                risk_level = "low"
+                approved = True
+                healing_trend = "improving"
+            else:
+                risk_level = "medium"
+                approved = True
+                healing_trend = "stable"
+            
+            self.reasoning_steps.append(
+                f"✅ MedGemma Vision analysis complete - Healing trend: {healing_trend}"
+            )
+            
+            return {
+                "intervention_type": "vision_analysis",
+                "risk_level": risk_level,
+                "approved": approved,
+                "vision_analysis_performed": True,
+                "temporal_comparison": len(previous_images) > 0,
+                "healing_trend": healing_trend,
+                "image_day": image_day,
+                "medgemma_response": response[:500],
+                "reason": f"MedGemma Vision assessment completed (Day {image_day})"
+            }
+            
+        except Exception as e:
+            logger.error(f"MedGemma Vision analysis failed: {str(e)}")
+            self.reasoning_steps.append(f"⚠️ Vision API error: {str(e)}")
+            
+            # Fallback: recommend caution for images
+            return {
+                "intervention_type": "vision_analysis",
+                "risk_level": "medium",
+                "approved": False,
+                "vision_analysis_performed": False,
+                "reason": "Vision API unavailable - recommend manual image review by healthcare provider"
             }
     
     def _determine_overall_risk(self, assessment_results: List[Dict[str, Any]]) -> str:

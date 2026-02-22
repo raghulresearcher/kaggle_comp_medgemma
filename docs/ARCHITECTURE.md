@@ -1,20 +1,19 @@
 # 🏗️ MedAdhere Pro - System Architecture
 
-## 📐 Overall Architecture (Minimum Viable Demo)
+## 📐 Overall System Architecture
 
 ```
 ┌────────────────────────────────────────────────────────────────┐
 │                     USER LAYER (Mobile-First)                   │
 ├────────────────────────────────────────────────────────────────┤
 │                                                                │
-│  📱 Mobile UI Prototype                                        │
-│  ├─ Push Notification Mockups                                 │
-│  ├─ Quick Action Screens                                      │
-│  ├─ Agent Reasoning Chat                                      │
+│  📱 Web User Interface                                         │
+│  ├─ Push Notification Display                                 │
+│  ├─ Quick Action Buttons                                      │
+│  ├─ Agent Reasoning Visualization                             │
 │  └─ Adherence Dashboard                                       │
 │                                                                │
-│  Implementation: Figma Prototype + Screen Recordings          │
-│                  OR Simple React/Flutter Demo                  │
+│  Implementation: HTML5, JavaScript, TailwindCSS                │
 │                                                                │
 └────────────────┬───────────────────────────────────────────────┘
                  │
@@ -76,15 +75,15 @@
 │                     MEDICAL AI LAYER                           │
 ├────────────────────────────────────────────────────────────────┤
 │                                                                │
-│  🧠 MedGemma Inference Service (GCP VM)                        │
+│  🧠 MedGemma Inference Service (Hugging Face Endpoint)         │
 │                                                                │
-│  Model: google/medgemma-1.5-4b-it                             │
-│  Instance: n1-standard-4 (4 vCPU, 15GB RAM)                   │
-│  Location: us-central1-a                                      │
-│  External IP: 136.116.155.46:8080                             │
+│  Model: google/medgemma-2-2b-it                               │
+│  Endpoint: Hugging Face Inference Endpoint                    │
+│  Vision: image-text-to-text (multimodal)                      │
 │                                                                │
 │  Endpoints:                                                    │
-│  • POST /generate (medical reasoning)                          │
+│  • POST /generate (medical reasoning - text)                   │
+│  • POST /generate (multimodal - image + text analysis)         │
 │  • GET  /health (service status)                              │
 │                                                                │
 │  Use Cases:                                                    │
@@ -92,8 +91,10 @@
 │  • Check drug interactions                                     │
 │  • Provide medical guidance                                    │
 │  • Assess symptom severity                                     │
+│  • Visual analysis of side effects (rashes, skin conditions)   │
+│  • Temporal healing progression tracking (multi-day images)    │
 │                                                                │
-│  Response Time: 30-60 seconds (CPU inference)                  │
+│  Response Time: 30-60 seconds (text and vision)                │
 │                                                                │
 └────────────────┬───────────────────────────────────────────────┘
                  │
@@ -222,6 +223,53 @@
     "Great! Following your new schedule perfectly! 🎯"
 ```
 
+### **Scenario 4 Workflow: Side Effect Healing Tracker (Multimodal AI with Vision)**
+
+**Patient:** David, 52, develops allopurinol rash Day 3. Needs objective tracking to decide continue vs stop.
+
+```
+Day 3: Initial Report + Photo
+  Patient uploads rash photo
+  ↓
+  Risk Agent detects image field
+  ↓
+  Calls MedGemma Vision API
+  ↓
+  Baseline assessment: "Mild urticarial rash, no emergency signs"
+  ↓
+  Approves daily monitoring protocol
+
+Day 4: Follow-up Photo
+  Patient uploads Day 4 photo
+  ↓
+  Temporal comparison: Day 3 → Day 4
+  ↓
+  MedGemma Vision: "Lesion count -15%, redness decreasing"
+  ↓
+  Healing trend: IMPROVING
+  ↓
+  Recommendation: Continue medication
+
+Day 5: Second Follow-up
+  Patient uploads Day 5 photo
+  ↓
+  Temporal comparison: Day 3 → Day 4 → Day 5
+  ↓
+  MedGemma Vision: "Lesion count -38%, clear improvement"
+  ↓
+  Healing trajectory: RESOLVING
+  ↓
+  Recommendation: Continue, rash healing
+
+Outcome: Patient continues allopurinol, rash resolves by Day 10
+```
+
+**Key Architecture Points:**
+- Same 5-agent workflow (no new agents)
+- Risk Agent adds vision API call when image present
+- Image field is optional (Scenarios 1-3 unchanged)
+- Temporal tracking via previous_images array
+
 ---
 
 ## 🗂️ Data Models
@@ -309,16 +357,15 @@
 
 ## 🔧 Technology Stack
 
-### **Frontend (Mobile UI)**
-- **Option A:** Figma mockups + screen recordings (fastest for demo)
-- **Option B:** React Native (production-ready)
-- **Option C:** Flutter (cross-platform)
+### **Frontend**
+- **Current:** HTML5, JavaScript, TailwindCSS (Web UI)
+- **Future:** Native mobile apps (iOS/Android)
 
 ### **Backend (Agent Orchestration)**
 - **Language:** Python 3.10+
 - **Framework:** Flask 3.0
 - **Agent Engine:** Custom multi-agent orchestrator
-- **WebSocket:** Flask-SocketIO for real-time chat
+- **WebSocket:** Flask-SocketIO for real-time communication
 - **Deployment:** Google Cloud Run (serverless) or VM
 
 ### **Database & Real-time Sync**
@@ -328,16 +375,23 @@
 - **Auth:** Firebase Authentication
 
 ### **AI Model**
-- **Model:** google/medgemma-1.5-4b-it
-- **Deployment:** GCP Compute Engine VM (n1-standard-4)
-- **Framework:** PyTorch + Transformers
-- **API:** Flask REST server
+- **Model:** google/medgemma-2-2b-it
+- **Deployment:** Hugging Face Inference Endpoint (Dedicated)
+- **Framework:** Transformers
+- **API:** REST API (text and multimodal)
+- **Vision Capability:** image-text-to-text multimodal endpoint
+  - **Use Case:** Temporal tracking of healing progression with multi-day photos
+  - **Integration:** Optional image + previous_images fields in patient action data
+  - **Processing:** Risk Assessment Agent conditionally calls vision API when image present
+  - **Features:** Single workflow with 3+ images for comprehensive temporal analysis
+  - **Analysis:** Lesion count, redness intensity, healing trajectory comparison
+  - **Output:** Objective visual assessment to support continue/stop decisions
 
 ### **Infrastructure**
 - **Cloud Provider:** Google Cloud Platform (GCP)
 - **Region:** us-central1 (low latency)
 - **Monitoring:** GCP Cloud Logging + Firebase Analytics
-- **Cost:** ~$5-10/day for demo (can stop when not testing)
+- **Cost:** ~$5-10/day for development/testing
 
 ---
 
@@ -419,15 +473,41 @@ data: {"type": "complete", "result": "Solution proposed"}
 
 ### **MedGemma Inference API**
 
-#### `POST http://136.116.155.46:8080/generate`
+#### Text Analysis: `POST https://<endpoint>.huggingface.cloud`
 Medical reasoning and safety validation
 
 **Request:**
 ```json
 {
-  "prompt": "Is it safe to take Metformin 30 minutes earlier than scheduled?",
-  "max_length": 512,
-  "temperature": 0.7
+  "inputs": "Is it safe to take Metformin 30 minutes earlier than scheduled?",
+  "parameters": {
+    "max_new_tokens": 512,
+    "temperature": 0.7
+  }
+}
+```
+
+**Response:**
+```json
+{
+  "generated_text": "Yes, taking Metformin 30 minutes earlier is generally safe..."
+}
+```
+
+#### Vision Analysis: `POST https://<endpoint>.huggingface.cloud`
+Multimodal image + text analysis for side effects
+
+**Request:**
+```json
+{
+  "inputs": {
+    "text": "Analyze this rash progression from Day 3 to Day 5...",
+    "image": "data:image/jpeg;base64,/9j/4AAQSkZJRg..."
+  },
+  "parameters": {
+    "max_new_tokens": 512,
+    "temperature": 0.7
+  }
 }
 ```
 
@@ -464,7 +544,7 @@ Medical reasoning and safety validation
 
 ## 📏 Scalability Considerations
 
-### **Current (Demo):**
+### **Current Implementation:**
 - 1-10 test patients
 - Single GCP VM for MedGemma
 - Firebase free tier
@@ -478,36 +558,36 @@ Medical reasoning and safety validation
 
 ---
 
-## 💰 Cost Estimate (Demo Period)
+## 💰 Cost Estimate (Development)
 
 | Component | Cost/Day | Notes |
 |-----------|----------|-------|
 | MedGemma VM (n1-standard-4) | $4.56 | Stop when not testing |
 | Firebase (Firestore + FCM) | $0-1 | Free tier sufficient |
 | Cloud Functions | $0 | Free tier (2M invocations) |
-| Bandwidth | $0.50 | Minimal for demo |
+| Bandwidth | $0.50 | Minimal for development |
 | **Total** | **~$5/day** | **~$150/month if always on** |
 
 **Optimization:** Stop VM after testing → **$0.20/day** (storage only)
 
 ---
 
-## 🎯 Minimum Viable Demo Scope
+## 🎯 Current Implementation Scope
 
-### **✅ Must Have (For Competition):**
-1. Mobile UI mockups (5 key screens)
+### **✅ Implemented Features:**
+1. Web-based user interface
 2. Push notification flow (simulated)
-3. Agent orchestration backend (working)
+3. Agent orchestration backend (5 specialized agents)
 4. MedGemma integration (deployed & tested)
 5. 3 complete scenarios (timing conflict, supplement interference, side effects)
 6. Real-time reasoning display (WebSocket)
-7. Demo video (3-5 minutes)
+7. Intelligent workflow summaries
 
-### **❌ Not Needed (For Competition):**
-- Full native mobile app (mockups sufficient)
+### **🔜 Future Enhancements:**
+- Native mobile apps (iOS & Android)
 - App store deployment
-- Real pharmacy integrations (mock data OK)
-- EHR connections (sample data)
+- Real pharmacy integrations
+- EHR system connections
 - Production-scale infrastructure
 
 ---
@@ -534,7 +614,7 @@ Medical reasoning and safety validation
 1. Design Phase (Current)
    └─ Architecture documentation ✓
    └─ Agent workflow design ✓
-   └─ Mobile UI mockups (Next)
+   └─ Mobile app development (Next)
 
 2. Backend Development
    └─ Agent orchestrator
@@ -546,22 +626,15 @@ Medical reasoning and safety validation
    └─ Test inference
    └─ API wrapper
 
-4. Demo Creation
-   └─ Mobile screen recordings
-   └─ Video editing
-   └─ Script writing
-
-5. Competition Submission
-   └─ Documentation
-   └─ Code cleanup
-   └─ Final testing
+4. Production Readiness
+   └─ Mobile app development
+   └─ External integrations
+   └─ Security hardening
 ```
 
 ---
 
 ## 📚 See Also
 
-- [AGENTS.md](AGENTS.md) - Detailed agent workflows
-- [MOBILE.md](MOBILE.md) - Mobile-first design patterns
-- [COMPETITION.md](COMPETITION.md) - Submission guidelines
-- [SETUP.md](SETUP.md) - Development setup instructions
+- [AGENTIC_FLOWS.md](AGENTIC_FLOWS.md) - Multi-agent workflow diagrams
+- [MOBILE_ARCHITECTURE.md](MOBILE_ARCHITECTURE.md) - Production mobile-first architecture

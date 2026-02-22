@@ -380,19 +380,169 @@ graph LR
 
 ---
 
+## Scenario 4: Side Effect Healing Tracker (with Vision)
+
+**Trigger:** `action="side_effect"`, `reason="skin_rash"`, `image` field present
+
+### Patient Problem
+Patient develops allopurinol-induced rash (Day 3). Uncertain whether to continue or stop medication. Traditional approach: 60% discontinue unnecessarily. Solution: Daily photo monitoring with MedGemma Vision temporal analysis.
+
+### Workflow Flow
+
+```mermaid
+sequenceDiagram
+    participant Patient
+    participant UI
+    participant Orch as Orchestrator
+    participant Inv as Investigation Agent
+    participant Rem as Remediation Agent
+    participant Risk as Risk Assessment (Vision)
+    participant Exec as Execution Agent
+    participant Learn as Learning Agent
+    participant DB as Firebase
+    participant Vision as MedGemma Vision API
+
+    Patient->>UI: Reports "Rash - should I stop?" + uploads Day 3 photo
+    UI->>Orch: Patient Action Data with image
+
+    rect rgb(200, 220, 240)
+        Note over Orch,Inv: Agent 1: Investigation
+        Orch->>Inv: Analyze Side Effect Report
+        Inv->>DB: Query medication history
+        DB-->>Inv: Allopurinol 300mg, started 3 days ago
+        Inv->>Inv: Detects: Side effect with baseline image (Day 3)<br/>Pattern: Visual monitoring candidate
+        Inv-->>Orch: Issue: "Allopurinol rash - requires visual tracking"
+    end
+
+    rect rgb(255, 230, 200)
+        Note over Orch,Rem: Agent 2: Remediation
+        Orch->>Rem: Create Monitoring Protocol
+        Rem->>Rem: Proposes:<br/>- Daily photo check-ins (9 AM)<br/>- Antihistamine for symptom relief<br/>- 48-72 hour observation period<br/>- Escalation criteria defined
+        Rem-->>Orch: Daily photo monitoring protocol
+    end
+
+    rect rgb(255, 200, 200)
+        Note over Orch,Risk: Agent 3: Risk Assessment with Vision
+        Orch->>Risk: Validate Safety + Analyze Image
+        Risk->>Risk: Detects image field → activates vision mode
+        Risk->>Vision: MedGemma Vision API call:<br/>"Analyze Day 3 baseline rash photo:<br/>Assess severity, lesion count, redness,<br/>emergency signs"
+        Vision-->>Risk: Baseline assessment:<br/>Lesion count: ~25 spots<br/>Redness: Moderate intensity<br/>Distribution: Arms and torso<br/>Severity: MILD urticarial rash<br/>Emergency signs: None detected<br/>Safe to monitor
+        Risk-->>Orch: Approved for daily monitoring (Risk: Low-Medium)
+    end
+
+    rect rgb(230, 200, 250)
+        Note over Orch,Exec: Agent 4: Execution
+        Orch->>Exec: Implement Monitoring
+        Exec->>DB: Store Day 3 baseline image
+        Exec->>DB: Schedule daily photo reminders (9 AM)
+        Exec->>Patient: Instructions:<br/>"Continue medication. Upload photo daily.<br/>Take antihistamine for itching.<br/>We'll track healing progress."
+        Exec-->>Orch: Patient notified + monitoring active
+    end
+
+    rect rgb(200, 240, 240)
+        Note over Orch,Learn: Agent 5: Learning
+        Orch->>Learn: Initialize Tracking
+        Learn->>DB: Store pattern: "allopurinol_rash_monitoring"<br/>Baseline: Day 3 image + assessment
+        Learn-->>Orch: Learning initialized
+    end
+
+    Note over Patient,Vision: === Day 4 Follow-up ===
+
+    Patient->>UI: Uploads Day 4 photo + notes "Slightly better"
+    UI->>Orch: Patient Action Data (Day 4 image + previous Day 3)
+
+    Orch->>Risk: Analyze Progression
+    Risk->>Risk: Temporal comparison mode activated
+    Risk->>Vision: MedGemma Vision API:<br/>"Compare Day 3 → Day 4:<br/>Assess healing progression"
+    Vision-->>Risk: Temporal analysis:<br/>Lesion count: ~21 spots (-15%)<br/>Redness: Decreasing intensity<br/>Healing trend: IMPROVING<br/>Recommendation: Continue monitoring
+    Risk-->>Orch: Healing trend: IMPROVING (Risk: Low)
+
+    Orch->>Patient: "Great! Rash improving. Continue medication."
+
+    Note over Patient,Vision: === Day 5 Second Follow-up ===
+
+    Patient->>UI: Uploads Day 5 photo + notes "Much better!"
+    UI->>Orch: Patient Action Data (Day 5 + Day 3, 4 history)
+
+    Orch->>Risk: Final Progression Analysis
+    Risk->>Vision: MedGemma Vision API:<br/>"Compare Day 3 → Day 4 → Day 5:<br/>Full temporal healing trajectory"
+    Vision-->>Risk: Multi-day temporal analysis:<br/>Lesion count: ~15 spots (-38% from Day 3)<br/>Redness: Significantly decreased<br/>Healing trajectory: CLEAR IMPROVEMENT<br/>Prediction: Resolving, continue medication
+    Risk-->>Orch: Healing trajectory: RESOLVING (Risk: Low)
+
+    Orch->>Exec: Update Treatment Plan
+    Exec->>Patient: "Rash resolving! Continue allopurinol.<br/>Check-in in 2 days."
+
+    Orch->>Learn: Track Successful Outcome
+    Learn->>DB: Pattern learned:<br/>"allopurinol_rash_benign_resolution"<br/>Image progression: Day 3-5 stored<br/>Outcome: Continued medication successfully
+
+    Note over Patient,Vision: === Day 10 Final Outcome ===
+    Patient->>Patient: Rash fully resolved
+    Patient->>Patient: Continues allopurinol (gout controlled)
+    Note over Patient: Avoided unnecessary discontinuation,<br/>gout flare, medication switch costs,<br/>and potential ED visit
+```
+
+### Key Visualization
+
+```mermaid
+graph LR
+    Day3[Day 3: Baseline Photo<br/>25 lesions, moderate redness] -->|MedGemma Vision| Assessment3[Mild rash<br/>Safe to monitor]
+    Day4[Day 4: Follow-up Photo<br/>21 lesions, less red] -->|Temporal Comparison| Assessment4[Improving -15%<br/>Continue]
+    Day5[Day 5: Second Follow-up<br/>15 lesions, fading] -->|Multi-day Analysis| Assessment5[Resolving -38%<br/>Clear improvement]
+    Assessment5 --> Outcome[Day 10: Fully healed<br/>Medication continued]
+    
+    style Day3 fill:#ffcccc
+    style Day4 fill:#ffe6cc
+    style Day5 fill:#e6ffcc
+    style Outcome fill:#ccffcc
+    style Assessment3 fill:#fff0b3
+    style Assessment4 fill:#b3e6ff
+    style Assessment5 fill:#b3ffb3
+```
+
+### Architecture Highlight: No New Agents Needed
+
+```mermaid
+graph TB
+    subgraph "Existing 5-Agent System (Unchanged)"
+        INV[Investigation Agent<br/>✓ Unchanged]
+        REM[Remediation Agent<br/>✓ Unchanged]
+        RISK[Risk Assessment Agent<br/>✅ +Vision capability]
+        EXEC[Execution Agent<br/>✓ Unchanged]
+        LEARN[Learning Agent<br/>✓ Unchanged]
+    end
+    
+    Image[Image Field<br/>Optional] -->|If present| RISK
+    RISK -->|Conditional call| Vision[MedGemma Vision API]
+    
+    Text[Text-Only<br/>Scenarios 1-3] --> RISK
+    RISK -->|Standard path| MedGemma[MedGemma Text API]
+    
+    style RISK fill:#ff6b6b
+    style Vision fill:#ffd700
+    style Image fill:#c7ecee
+    style Text fill:#dfe6e9
+    
+    Note1[Only Risk Agent modified<br/>Single if-statement:<br/>if image field present → call vision API<br/>else → standard text analysis]
+```
+
+---
+
 ## Key Differences Across Scenarios
 
-| Aspect | Scenario 1: Timing Conflict | Scenario 2: Supplement Interference | Scenario 3: Side Effects |
-|--------|---------------------------|-----------------------------------|--------------------------|
-| **Trigger** | Skipped/Timing Conflict | Skipped/Supplement Interference | Took/Side Effects |
-| **Investigation Focus** | Medication timing complexity | Drug-supplement interactions | Medical symptoms |
-| **Remediation Type** | Optimized schedule | Timing separation | Dosing guidance |
-| **Risk Level** | Low | Medium | Variable (Mild-Severe) |
-| **MedGemma Role** | **Critical** | **Critical** | **Critical** |
-| **Urgency** | Standard | Medium | Immediate |
-| **Follow-Up** | Track adherence improvement | Lab recheck in 6 weeks | Symptom check in 3 days |
-| **Learning Focus** | Timing complexity patterns | Supplement interference patterns | Side effect management |
-| **Adherence Barrier** | "Too confusing to take" | "Taking it but not working" | "Can't tolerate it" |
+| Aspect | Scenario 1: Timing Conflict | Scenario 2: Supplement Interference | Scenario 3: Side Effects | Scenario 4: Healing Tracker |
+|--------|---------------------------|-----------------------------------|--------------------------|----------------------------|
+| **Trigger** | Skipped/Timing Conflict | Skipped/Supplement Interference | Took/Side Effects | Side Effect/Skin Rash |
+| **Investigation Focus** | Medication timing complexity | Drug-supplement interactions | Medical symptoms | Visual monitoring baseline |
+| **Remediation Type** | Optimized schedule | Timing separation | Dosing guidance | Photo monitoring protocol |
+| **Risk Level** | Low | Medium | Variable (Mild-Severe) | Low-Medium (temporal tracking) |
+| **MedGemma Role** | **Critical** (text) | **Critical** (text) | **Critical** (text) | **Critical** (vision) |
+| **Modality** | Text-only | Text-only | Text-only | **Multimodal (image + text)** |
+| **Temporal Tracking** | No | No | No | **Yes (Day 3→4→5)** |
+| **Urgency** | Standard | Medium | Immediate | Daily follow-up |
+| **Follow-Up** | Track adherence improvement | Lab recheck in 6 weeks | Symptom check in 3 days | Daily photo check-in |
+| **Learning Focus** | Timing complexity patterns | Supplement interference patterns | Side effect management | **Visual healing patterns** |
+| **Adherence Barrier** | "Too confusing to take" | "Taking it but not working" | "Can't tolerate it" | "Should I stop because of rash?" |
+| **Innovation** | AI scheduling | AI drug interaction detection | AI severity assessment | **AI visual temporal analysis** |
 
 ---
 

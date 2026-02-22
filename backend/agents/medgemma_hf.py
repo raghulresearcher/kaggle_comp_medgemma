@@ -44,23 +44,44 @@ class MedGemmaHF(LLM):
             prompt: The input prompt for medical reasoning
             stop: List of stop sequences (optional)
             run_manager: Callback manager (optional)
-            **kwargs: Additional parameters
+            **kwargs: Additional parameters including:
+                - image: Base64 image data (for multimodal vision tasks)
+                - previous_images: List of previous base64 images (for temporal comparison)
             
         Returns:
             The model's response text
         """
         try:
-            logger.info(f"Calling MedGemma HF endpoint")
+            # Extract image data if provided (for multimodal endpoint)
+            image_data = kwargs.get("image")
+            previous_images = kwargs.get("previous_images", [])
+            
+            logger.info(f"Calling MedGemma HF endpoint (multimodal={bool(image_data)})")
             logger.debug(f"Prompt: {prompt[:100]}...")
             
             # Prepare request payload for HF Inference Endpoint
-            payload = {
-                "inputs": prompt,
-                "parameters": {
-                    "max_new_tokens": kwargs.get("max_tokens", self.max_tokens),
-                    "temperature": kwargs.get("temperature", self.temperature)
+            # For image-text-to-text task, include image in inputs
+            if image_data:
+                payload = {
+                    "inputs": {
+                        "text": prompt,
+                        "image": image_data  # Base64 image string
+                    },
+                    "parameters": {
+                        "max_new_tokens": kwargs.get("max_tokens", self.max_tokens),
+                        "temperature": kwargs.get("temperature", self.temperature)
+                    }
                 }
-            }
+                logger.info(f"📸 Sending image to MedGemma Vision endpoint (size: {len(image_data)} chars)")
+            else:
+                # Text-only mode (backward compatible)
+                payload = {
+                    "inputs": prompt,
+                    "parameters": {
+                        "max_new_tokens": kwargs.get("max_tokens", self.max_tokens),
+                        "temperature": kwargs.get("temperature", self.temperature)
+                    }
+                }
             
             # Make HTTP request to HF endpoint
             headers = {
