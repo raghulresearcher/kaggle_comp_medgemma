@@ -23,10 +23,12 @@ wheels/
 .installed.cfg
 *.egg
 
-# Environment variables
+# Environment variables - CRITICAL: Contains API keys and secrets
 .env
 .env.local
 .env.*.local
+.env.production
+.env.development
 functions/.env.yaml
 
 # IDE
@@ -40,10 +42,14 @@ functions/.env.yaml
 # Logs
 logs/
 *.log
+backend_pid.txt
+frontend_pid.txt
 
-# Firebase
+# Firebase - CRITICAL: Contains private keys and service account credentials
 firebase-credentials.json
 *-firebase-*.json
+serviceAccount*.json
+*-adminsdk-*.json
 
 # Testing
 .pytest_cache/
@@ -72,9 +78,16 @@ test_imports.py
 *_backup.py
 *_broken.py
 
+# Competition presentation generated files
+Competition-Presentation.pdf
+*.pptx
+
 # Screenshot images and video scripts
-image/SCENARIO4_INTEGRATION/
+image/
+images/
+screenshots/
 video-script/
+sample_images/
 
 # Test utilities and generated images (exclude from git, keep unit tests)
 tests/download_medical_images.py
@@ -83,3 +96,14 @@ tests/generate_medical_sample_images.py
 tests/view_images.py
 tests/test_scenario*.py
 tests/sample_*.jpg
+tests/sample_*.png
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini

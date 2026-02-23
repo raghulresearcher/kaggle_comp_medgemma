@@ -1,5 +1,9 @@
 # MedAdhere Pro - AI-Powered Medication Adherence System
 
+> **Kaggle Submission by:** `raghuln894`  
+> **Competition:** Google Kaggle AI for Medication Adherence | February 2026  
+> **Repository:** [github.com/raghulresearcher/kaggle_comp_medgemma](https://github.com/raghulresearcher/kaggle_comp_medgemma)
+
 ## Overview
 
 MedAdhere Pro is an intelligent medication adherence assistant that leverages multi-agent AI workflows with Google's MedGemma model to help patients take their medications correctly through proactive intervention, personalized solutions, and continuous learning.
@@ -45,7 +49,7 @@ An autonomous AI care team powered by **5 specialized agents** ALL using **MedGe
 - **Learning Agent** - Medical outcome analysis with MedGemma
 
 ### 3. Medical Intelligence (Powered by MedGemma Throughout)
-- **google/medgemma-2-2b-it** - HAI-DEF competition model
+- **google/medgemma-1.5-4b-it** - HAI-DEF competition model
 - **System-wide deployment:** All 5 agents use MedGemma for medical reasoning
 - Real-time safety validation of all interventions
 - Drug-drug and drug-supplement interaction detection
@@ -78,22 +82,15 @@ An autonomous AI care team powered by **5 specialized agents** ALL using **MedGe
 **Phase 3 (Year 5):** 50 million patients nationwide (half of US chronic disease population)
 - **Impact:** 7.5M adherent patients, $225B cost savings, 93,750 lives saved
 
-### Why This Works: Real Patient Scenarios
+### Demonstrated Capabilities
 
-**📖 Patient Story: Sarah (Scenario 1)**
-- **Before:** 62-year-old with thyroid, diabetes, osteoporosis. Takes 8 medications. Skips thyroid med 3x/week due to confusion about timing (empty stomach vs. with food vs. 4 hours apart).
-- **With MedAdhere Pro:** MedGemma analyzes timing requirements, creates personalized schedule. Adherence improves from 57% → 92%.
-- **Result:** TSH normalizes, avoided thyroid crisis hospitalization ($15K saved).
+**Working Prototype with 4 Operational Scenarios:**
+- **Scenario 1 (p001):** Medication timing conflict resolution
+- **Scenario 2 (p002):** Supplement-drug interaction detection  
+- **Scenario 3 (p003):** Side effect severity assessment
+- **Scenario 4 (p004):** Multimodal vision tracking for adverse drug reactions
 
-**📖 Patient Story: James (Scenario 2)**
-- **Before:** 58-year-old diabetic, good adherence (85%) but A1C rising despite compliance. Started calcium and iron supplements without telling doctor.
-- **With MedAdhere Pro:** System detects declining labs despite adherence. MedGemma identifies supplement interference with metformin absorption. Adjusts timing.
-- **Result:** A1C drops from 8.9% → 7.2%, avoided insulin escalation.
-
-**📖 Patient Story: Maria (Scenario 3)**
-- **Before:** 45-year-old with hypertension. Stops lisinopril after 2 weeks due to persistent nausea. Doesn't call doctor (embarrassed). BP spikes to 180/110.
-- **With MedAdhere Pro:** Reports side effect via app. MedGemma validates severity (mild), suggests taking with food and monitoring. Proactive follow-up in 3 days.
-- **Result:** Stays on medication, BP controlled, avoided ER visit and medication switch cycle.
+See demo scenarios section below for technical details.
 
 ### Economic Model
 
@@ -218,8 +215,8 @@ medadhere-agentic-clean/
 
 Our system demonstrates medical reasoning AI solving real adherence barriers that simple reminders cannot address:
 
-### Scenario 1: Medication Timing Conflict ⏰
-**The Challenge:** Patient confused about when to take multiple medications (thyroid med requires empty stomach, calcium blocks thyroid absorption, metformin needs food)
+### Scenario 1: Medication Timing Conflict ⏰ (Patient p001)
+**The Challenge:** Patient confused about when to take multiple medications (levothyroxine requires empty stomach, calcium blocks absorption, metformin needs food)
 
 **MedAdhere Pro Response:**
 1. **Investigation Agent** (MedGemma) detects pattern of skipped thyroid doses
@@ -230,8 +227,8 @@ Our system demonstrates medical reasoning AI solving real adherence barriers tha
 
 **Medical Reasoning:** MedGemma understands complex pharmacokinetic requirements that generic scheduling apps ignore
 
-### Scenario 2: Supplement Interference 💊
-**The Challenge:** Patient has good adherence (85%) but labs worsening. Recently started OTC calcium and iron supplements without telling doctor.
+### Scenario 2: Supplement Interference 💊 (Patient p002)
+**The Challenge:** Patient has good adherence but labs worsening. Recently started calcium and iron supplements.
 
 **MedAdhere Pro Response:**
 1. **Investigation Agent** (MedGemma) detects declining A1C despite high adherence
@@ -242,8 +239,8 @@ Our system demonstrates medical reasoning AI solving real adherence barriers tha
 
 **Medical Reasoning:** MedGemma detects absorption interference that even doctors often miss
 
-### Scenario 3: Side Effects Management 🤢
-**The Challenge:** Patient reports nausea from blood pressure medication. Considering stopping.
+### Scenario 3: Side Effects Management 🤢 (Patient p003)
+**The Challenge:** Patient reports nausea from metformin medication. Considering stopping.
 
 **MedAdhere Pro Response:**
 1. **Investigation Agent** captures side effect report
@@ -254,29 +251,30 @@ Our system demonstrates medical reasoning AI solving real adherence barriers tha
 
 **Medical Reasoning:** MedGemma distinguishes mild vs severe side effects, recommends appropriate interventions
 
-### Scenario 4: Side Effect Healing Tracker 📸
-**The Challenge:** Patient develops allopurinol-induced rash (Day 3). Daily photo monitoring needed to decide: continue medication or stop?
+### Scenario 4: Vision-Based Healing Tracker 📸 (Patient p004)
+**The Challenge:** Patient develops allopurinol-induced rash (Day 3). Daily photo monitoring needed to assess progression.
 
 **MedAdhere Pro Response:**
 1. **Investigation Agent** captures daily symptom reports with photos (Day 3, 4, 5)
-2. **Risk Assessment Agent** + **MedGemma Vision** analyzes healing progression (lesion count, redness intensity, distribution pattern)
-3. **Remediation Agent** recommends evidence-based monitoring protocol
+2. **Risk Assessment Agent** + **MedGemma Vision** analyzes temporal progression (size, distribution, severity)
+3. **Remediation Agent** recommends monitoring protocol based on vision analysis
 4. **Execution Agent** schedules daily photo check-ins with reminders
-5. **Learning Agent** tracks temporal healing patterns to predict outcomes
+5. **Learning Agent** tracks temporal healing patterns
 
-**Medical Reasoning:** MedGemma Vision performs temporal image analysis showing improvement (38% fewer lesions Day 3→5, decreasing redness). Prevents unnecessary discontinuation while ensuring patient safety through objective visual tracking.
+**Medical Reasoning:** MedGemma Vision performs temporal image analysis detecting rash worsening from Day 3→5. System escalates risk to HIGH and recommends provider contact. Prevents serious adverse drug reactions through objective visual tracking.
 
-**Real Impact:** David continues allopurinol, rash resolves fully by Day 10, avoids gout flare and medication switching costs. Without visual tracking, 60% of patients discontinue at first sign of rash.
+## Demo
 
-## Testing
+**Interactive Demo Available:**
 
-Run the included test scenarios:
+1. Start the backend: `python backend/app.py`
+2. Start the frontend: `cd public && python -m http.server 3000`
+3. Open browser: http://localhost:3000
+4. Run any of the 4 demo scenarios
 
+**Unit Tests:**
 ```bash
-python tests/test_scenario1.py  # Medication timing conflict
-python tests/test_scenario2.py  # Supplement interference
-python tests/test_scenario3.py  # Side effects
-python tests/test_scenario4.py  # Side effect healing tracker (with images)
+pytest tests/unit_test/  # 26 tests covering all agents
 ```
 
 ## Documentation
@@ -318,11 +316,24 @@ See [Mobile Architecture](docs/MOBILE_ARCHITECTURE.md) for detailed production a
 - Outcome tracking: adherence rates, hospitalizations, costs
 - Validation study targeting publication in JMIR or JAMIA
 
-## License
+## 🏆 Competition Submission
 
-[Add your license here]
+**Competition:** Google Kaggle AI for Medication Adherence  
+**Kaggle User ID:** raghuln894  
+**Submitted by:** Raghul N  
+**Submission Date:** February 24, 2026  
 
-## Contact
+**Key Features for Judging:**
+- ✅ All 5 agents use MedGemma (HAI-DEF model) for medical reasoning
+- ✅ Multimodal vision capability (MedGemma Vision for image analysis)
+- ✅ 4 working demo scenarios with real-time execution
+- ✅ 26 passing unit tests (100% pass rate)
+- ✅ Production-ready architecture with Firebase integration
 
-For questions or collaboration opportunities, please open an issue on GitHub.
+## 📞 Contact
+
+**GitHub Repository:** [github.com/raghulresearcher/kaggle_comp_medgemma](https://github.com/raghulresearcher/kaggle_comp_medgemma)  
+**Kaggle Profile:** [kaggle.com/raghuln894](https://www.kaggle.com/raghuln894)
+
+For questions about this submission, please open an issue on GitHub.
 
