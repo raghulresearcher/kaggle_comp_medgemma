@@ -18,7 +18,11 @@ graph TB
     EXEC --> Firebase
     LEARN --> Firebase
     
-    RISK --> MedGemma[MedGemma AI]
+    INV --> MedGemma[MedGemma AI]
+    REM --> MedGemma
+    RISK --> MedGemma
+    EXEC --> MedGemma
+    LEARN --> MedGemma
     
     style Orchestrator fill:#4CAF50
     style INV fill:#2196F3
@@ -27,6 +31,8 @@ graph TB
     style EXEC fill:#9C27B0
     style LEARN fill:#00BCD4
     style MedGemma fill:#FFD700
+    
+    Note1["🏥 ALL AGENTS use MedGemma for medical reasoning"]
 ```
 
 ---

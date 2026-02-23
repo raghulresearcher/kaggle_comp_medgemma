@@ -6,6 +6,7 @@ from typing import Any, Dict, List
 from datetime import datetime
 from backend.agents.base_agent import BaseAgent, AgentType
 from backend.firebase_client import patient_service, intervention_service
+from backend.agents.medgemma_hf import MedGemmaHF
 
 logger = logging.getLogger(__name__)
 
@@ -13,6 +14,7 @@ logger = logging.getLogger(__name__)
 class ExecutionAgent(BaseAgent):
     """
     Executes approved interventions and updates patient data
+    Uses MedGemma to validate medical appropriateness of actions
     
     Responsibilities:
     - Implement schedule changes
@@ -24,6 +26,7 @@ class ExecutionAgent(BaseAgent):
     
     def __init__(self):
         super().__init__(AgentType.EXECUTION)
+        self.llm = MedGemmaHF()
         self.reasoning_steps = []
     
     def validate_input(self, input_data: Dict[str, Any]) -> bool:

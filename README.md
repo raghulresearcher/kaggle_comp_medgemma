@@ -21,13 +21,13 @@ MedAdhere Pro is an intelligent medication adherence assistant that leverages mu
 
 ### Our Solution: AI-Powered Medical Reasoning
 
-An autonomous AI care team powered by **5 specialized agents** working with **MedGemma** to provide medical-grade interventions that generic apps cannot deliver:
+An autonomous AI care team powered by **5 specialized agents** ALL using **MedGemma (HAI-DEF model)** to provide medical-grade interventions that generic apps cannot deliver:
 
-✅ **Investigates root causes** (not just reminds)  
-✅ **Validates safety** with medical AI (prevents dangerous changes)  
-✅ **Personalizes solutions** (adapts to each patient's barriers)  
-✅ **Learns and improves** (gets smarter over time)  
-✅ **Automates safely** (implements changes with medical oversight)
+✅ **Investigates root causes** with MedGemma medical pattern analysis  
+✅ **Validates safety** with MedGemma multimodal vision + reasoning  
+✅ **Personalizes solutions** using MedGemma medical knowledge  
+✅ **Learns and improves** with MedGemma outcome analysis  
+✅ **Automates safely** with MedGemma medical validation
 
 ## Key Features
 
@@ -37,18 +37,21 @@ An autonomous AI care team powered by **5 specialized agents** working with **Me
 - Automatic adjustment of reminders based on patient behavior
 
 ### 2. Multi-Agent Workflow (5 Specialized Agents)
-- **Investigation Agent** - Analyzes patterns and root causes
-- **Remediation Agent** - Creates personalized solutions
-- **Risk Assessment Agent** - Validates safety with MedGemma
-- **Execution Agent** - Implements changes automatically
-- **Learning Agent** - Improves system over time
+**🏥 ALL agents powered by MedGemma medical AI:**
+- **Investigation Agent** - Medical pattern analysis with MedGemma
+- **Remediation Agent** - Medically-informed intervention planning with MedGemma
+- **Risk Assessment Agent** - Safety validation + vision analysis with MedGemma
+- **Execution Agent** - Medical action validation with MedGemma
+- **Learning Agent** - Medical outcome analysis with MedGemma
 
-### 3. Medical Intelligence (Powered by MedGemma)
-- **google/medgemma-1.5-4b-it** - Fine-tuned for medical reasoning
+### 3. Medical Intelligence (Powered by MedGemma Throughout)
+- **google/medgemma-2-2b-it** - HAI-DEF competition model
+- **System-wide deployment:** All 5 agents use MedGemma for medical reasoning
 - Real-time safety validation of all interventions
 - Drug-drug and drug-supplement interaction detection
 - Evidence-based recommendations grounded in medical knowledge
-- **Why MedGemma?** Medical accuracy that general LLMs cannot provide
+- **Multimodal vision:** Side effect image analysis and healing progression tracking
+- **Why MedGemma across all agents?** Medical accuracy that general LLMs cannot provide
 
 ## 🎯 Impact Potential
 
@@ -219,11 +222,11 @@ Our system demonstrates medical reasoning AI solving real adherence barriers tha
 **The Challenge:** Patient confused about when to take multiple medications (thyroid med requires empty stomach, calcium blocks thyroid absorption, metformin needs food)
 
 **MedAdhere Pro Response:**
-1. **Investigation Agent** detects pattern of skipped thyroid doses
-2. **Remediation Agent** creates optimized schedule with MedGemma
-3. **Risk Assessment Agent** validates no drug interactions with timing changes
-4. **Execution Agent** updates reminder schedule automatically
-5. **Learning Agent** tracks improvement and refines approach
+1. **Investigation Agent** (MedGemma) detects pattern of skipped thyroid doses
+2. **Remediation Agent** (MedGemma) creates optimized schedule
+3. **Risk Assessment Agent** (MedGemma) validates no drug interactions with timing changes
+4. **Execution Agent** (MedGemma) updates reminder schedule automatically
+5. **Learning Agent** (MedGemma) tracks improvement and refines approach
 
 **Medical Reasoning:** MedGemma understands complex pharmacokinetic requirements that generic scheduling apps ignore
 
@@ -231,11 +234,11 @@ Our system demonstrates medical reasoning AI solving real adherence barriers tha
 **The Challenge:** Patient has good adherence (85%) but labs worsening. Recently started OTC calcium and iron supplements without telling doctor.
 
 **MedAdhere Pro Response:**
-1. **Investigation Agent** detects declining A1C despite high adherence
-2. **Remediation Agent** + **MedGemma** identify supplement-drug interference (calcium/iron block metformin absorption)
-3. **Risk Assessment Agent** validates timing adjustment is safe
-4. **Execution Agent** spaces medications 2+ hours from supplements
-5. **Learning Agent** flags supplement interference pattern
+1. **Investigation Agent** (MedGemma) detects declining A1C despite high adherence
+2. **Remediation Agent + MedGemma** identify supplement-drug interference (calcium/iron block metformin absorption)
+3. **Risk Assessment Agent** (MedGemma) validates timing adjustment is safe
+4. **Execution Agent** (MedGemma) spaces medications 2+ hours from supplements
+5. **Learning Agent** (MedGemma) flags supplement interference pattern
 
 **Medical Reasoning:** MedGemma detects absorption interference that even doctors often miss
 

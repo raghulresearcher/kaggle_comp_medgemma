@@ -71,3 +71,7 @@ test_imports.py
 # Backup files
 *_backup.py
 *_broken.py
+
+# Screenshot images and video scripts
+image/SCENARIO4_INTEGRATION/
+video-script/

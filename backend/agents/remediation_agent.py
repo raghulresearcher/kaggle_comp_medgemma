@@ -4,6 +4,7 @@ Remediation Agent - Creates personalized solutions
 import logging
 from typing import Any, Dict, List
 from backend.agents.base_agent import BaseAgent, AgentType
+from backend.agents.medgemma_hf import MedGemmaHF
 
 logger = logging.getLogger(__name__)
 
@@ -11,6 +12,7 @@ logger = logging.getLogger(__name__)
 class RemediationAgent(BaseAgent):
     """
     Creates personalized remediation solutions based on investigation findings
+    Uses MedGemma for medically-informed intervention planning
     
     Responsibilities:
     - Design intervention strategies
@@ -21,6 +23,7 @@ class RemediationAgent(BaseAgent):
     
     def __init__(self):
         super().__init__(AgentType.REMEDIATION)
+        self.llm = MedGemmaHF()
         self.reasoning_steps = []
     
     def validate_input(self, input_data: Dict[str, Any]) -> bool:

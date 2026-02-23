@@ -51,11 +51,13 @@
 │                                                                │
 │  Main Components:                                              │
 │  ├─ AgentOrchestrator (routes to correct agent)               │
-│  ├─ InvestigationAgent (analyzes patterns)                    │
-│  ├─ RemediationAgent (creates solutions)                      │
-│  ├─ RiskAssessmentAgent (validates with MedGemma)             │
-│  ├─ ExecutionAgent (implements changes)                       │
-│  └─ LearningAgent (improves over time)                        │
+│  ├─ InvestigationAgent (MedGemma pattern analysis)            │
+│  ├─ RemediationAgent (MedGemma intervention planning)         │
+│  ├─ RiskAssessmentAgent (MedGemma safety + vision)            │
+│  ├─ ExecutionAgent (MedGemma action validation)               │
+│  └─ LearningAgent (MedGemma outcome analysis)                 │
+│                                                                │
+│  🏥 ALL AGENTS powered by MedGemma medical AI                  │
 │                                                                │
 │  APIs:                                                         │
 │  • POST /api/patient-action (logs medication actions)          │
@@ -375,10 +377,16 @@ Outcome: Patient continues allopurinol, rash resolves by Day 10
 - **Auth:** Firebase Authentication
 
 ### **AI Model**
-- **Model:** google/medgemma-2-2b-it
+- **Model:** google/medgemma-2-2b-it (HAI-DEF competition model)
 - **Deployment:** Hugging Face Inference Endpoint (Dedicated)
 - **Framework:** Transformers
 - **API:** REST API (text and multimodal)
+- **Usage:** **ALL 5 agents powered by MedGemma**
+  - **Investigation Agent:** Medical context-aware pattern analysis
+  - **Remediation Agent:** Medically-informed intervention planning
+  - **Risk Assessment Agent:** Safety validation + multimodal vision analysis
+  - **Execution Agent:** Medical appropriateness validation
+  - **Learning Agent:** Medical pattern recognition and effectiveness analysis
 - **Vision Capability:** image-text-to-text multimodal endpoint
   - **Use Case:** Temporal tracking of healing progression with multi-day photos
   - **Integration:** Optional image + previous_images fields in patient action data
