@@ -39,10 +39,13 @@ graph TB
 
 ## Scenario 1: Medication Timing Conflict
 
-**Trigger:** `action="skipped"`, `reason="timing_conflict"`
+**Trigger:** `action="skipped"`, `reason="timing_conflict"`  
+**Patient ID:** p001  
+**Medication:** Levothyroxine 50mcg  
+**Notes:** *"Too confusing - don't know when to take thyroid med vs calcium vs metformin"*
 
 ### Patient Problem
-Patient has multiple medications with complex timing requirements (empty stomach, with food, 4 hours apart). Patient skips doses due to confusion about when to take each medication.
+Patient p001 has multiple medications with complex timing requirements (empty stomach, with food, 4 hours apart). Patient skips doses due to confusion about when to take each medication.
 
 ### Workflow Flow
 
@@ -137,10 +140,13 @@ graph TD
 
 ## Scenario 2: Supplement Interference
 
-**Trigger:** `action="skipped"`, `reason="supplement_interference"`
+**Trigger:** `action="skipped"`, `reason="supplement_interference"`  
+**Patient ID:** p002  
+**Medication:** Levothyroxine 50mcg  
+**Notes:** *"Good adherence but labs worsening - recently started calcium and iron supplements"*
 
 ### Patient Problem
-Patient has excellent adherence (98%) but lab results are worsening. Recently started taking calcium and iron supplements that are blocking thyroid medication absorption by 50%.
+Patient p002 has excellent adherence (98%) but lab results are worsening. Recently started taking calcium and iron supplements (calcium 1200mg + iron 325mg) that are blocking thyroid medication absorption by 25-55%.
 
 ### Workflow Flow
 
@@ -242,7 +248,13 @@ graph TD
 
 ## Scenario 3: Patient Experiencing Side Effects
 
-**Trigger:** `action="took"`, `reason="side_effects"`
+**Trigger:** `action="took"`, `reason="side_effects"`  
+**Patient ID:** p003  
+**Medication:** Metformin 500mg  
+**Notes:** *"Feeling nauseous after taking"*
+
+### Patient Problem
+Patient p003 took metformin but is experiencing nausea. Needs guidance on whether to continue or adjust dosing. This is a common side effect (10-25% of patients) that is usually manageable.
 
 ### Workflow Flow
 
@@ -282,9 +294,9 @@ sequenceDiagram
     rect rgb(255, 200, 200)
         Note over Orch,Risk: Agent 3: Risk Assessment (CRITICAL)
         Orch->>Risk: Validate Intervention Safety
-        Risk->>AI: MedGemma Consult:<br/>"Metformin + nausea + timing"
-        AI->>AI: Medical reasoning:<br/>Check drug properties<br/>Analyze timing impact<br/>Assess severity
-        AI-->>Risk: Medical Advice:<br/>"Take with food reduces nausea.<br/>Common side effect. Safe to continue."
+        Risk->>AI: MedGemma Consult:<br/>"Metformin 500mg + nausea.<br/>Assess severity and safety."
+        AI->>AI: Medical reasoning:<br/>SEVERITY: MILD (10-25% of patients)<br/>SAFETY: MANAGEABLE (not dangerous)<br/>Management options available
+        AI-->>Risk: Medical Advice:<br/>"MILD/MANAGEABLE side effect.<br/>Take with largest meal.<br/>Consider XR formulation if persists.<br/>RED FLAGS not present."
         Risk->>Risk: Severity assessment:<br/>Mild - Can manage
         Risk-->>Orch: Approved with guidance
     end
@@ -388,10 +400,14 @@ graph LR
 
 ## Scenario 4: Side Effect Healing Tracker (with Vision)
 
-**Trigger:** `action="side_effect"`, `reason="skin_rash"`, `image` field present
+**Trigger:** `action="took"`, `reason="side_effects"`, `image` field present  
+**Patient ID:** p004  
+**Medication:** Allopurinol 300mg  
+**Notes:** *"Red itchy rash on arms and torso started yesterday. Should I stop taking this?"*  
+**Image Day:** 3 (baseline), then Day 4 and Day 5 follow-ups
 
 ### Patient Problem
-Patient develops allopurinol-induced rash (Day 3). Uncertain whether to continue or stop medication. Traditional approach: 60% discontinue unnecessarily. Solution: Daily photo monitoring with MedGemma Vision temporal analysis.
+Patient p004 develops allopurinol-induced rash (Day 3). Uncertain whether to continue or stop medication. Traditional approach: 60% discontinue unnecessarily. Solution: Daily photo monitoring with MedGemma Vision temporal analysis.
 
 ### Workflow Flow
 
@@ -537,7 +553,8 @@ graph TB
 
 | Aspect | Scenario 1: Timing Conflict | Scenario 2: Supplement Interference | Scenario 3: Side Effects | Scenario 4: Healing Tracker |
 |--------|---------------------------|-----------------------------------|--------------------------|----------------------------|
-| **Trigger** | Skipped/Timing Conflict | Skipped/Supplement Interference | Took/Side Effects | Side Effect/Skin Rash |
+| **Trigger** | Skipped/Timing Conflict | Skipped/Supplement Interference | Took/Side Effects | Took/Side Effects + Image |
+| **Patient ID** | p001 | p002 | p003 | p004 |
 | **Investigation Focus** | Medication timing complexity | Drug-supplement interactions | Medical symptoms | Visual monitoring baseline |
 | **Remediation Type** | Optimized schedule | Timing separation | Dosing guidance | Photo monitoring protocol |
 | **Risk Level** | Low | Medium | Variable (Mild-Severe) | Low-Medium (temporal tracking) |
