@@ -75,3 +75,11 @@ test_imports.py
 # Screenshot images and video scripts
 image/SCENARIO4_INTEGRATION/
 video-script/
+
+# Test utilities and generated images (exclude from git, keep unit tests)
+tests/download_medical_images.py
+tests/download_real_medical_images.py
+tests/generate_medical_sample_images.py
+tests/view_images.py
+tests/test_scenario*.py
+tests/sample_*.jpg
